@@ -147,26 +147,4 @@ components:
     getStandingsResponse:
         type: object
         properties:
-            overall_standings:
-                type: array
-                items:
-                - name: index
-                  type: integer
-                  description: The team's ranking in the division.
-                - name: Tm
-                  type: string
-                  description: The team's name.
-                - name: W
-                  type: string
-                  description: The number of wins the team has.
-                - name: L
-                  type: string
-                  description: The number of losses the team has.
-                - name: W-L%
-                  type: string
-                  description: The team's win to loss ratio.
-                - name: GB
-                  type: string
-                  description: The number of games the team is behind first place.
-
-                
+            standings:

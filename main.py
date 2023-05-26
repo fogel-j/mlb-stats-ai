@@ -6,7 +6,8 @@ import quart
 import quart_cors
 from quart import request
 
-import pybaseball
+from pybaseball import standings
+import pandas as pd
 
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
@@ -17,7 +18,18 @@ ESPN_URL = "https://www.espn.com"
 @app.get("/standings")
 async def get_standings():
     # Return the overall MLB standings
-    return "Success", 200
+    overall_standings = []
+    year = request.args.get("query")
+    standing = standings(int(year))
+    for i in standing:
+        overall_standings.append(json.loads(i.to_json(orient='table')))
+
+    return quart.Response(json.dumps(overall_standings), status=200)
+
+@app.get("/news")
+async def get_news():
+    # Return relevant news articles for the team or player being asked about
+    pass
 
 
 @app.get("/players")
@@ -130,6 +142,7 @@ async def openapi_spec():
         # This is a trick we do to populate the PLUGIN_HOSTNAME constant in the OpenAPI spec
         text = text.replace("PLUGIN_HOSTNAME", f"https://{host}")
         return quart.Response(text, mimetype="text/yaml")
+
 @app.errorhandler(404)
 async def page_not_found(e):
     return "Page Not Found" , 404

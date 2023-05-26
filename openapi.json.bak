@@ -1,0 +1,87 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Baseball Stats",
+    "description": "Get current and historical statistics for MLB players, teams, games, and seasons.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5003"
+    }
+  ],
+  "paths": {
+    "/standings": {
+      "get": {
+        "operationId": "getStandings",
+        "summary": "Retrieves the overall standings for all teams across the MLB depending on the year that is supplied.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Used to filter the year the overall standings should be returned for."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the overall league standings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/overall_standings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    
+  "components": {
+    "schemas": {
+      "getStandingsResponse": {
+        "type": "object",
+        "properties": {
+          "overall_standings": {
+            "type" : "array",
+            "items": [
+            {
+                "name": "index",
+                "type": "integer",
+                "description": "The team's ranking in the division."
+            },
+            {
+                "name": "Tm",
+                "type": "string",
+                "description" : "The team name"
+            },
+            {
+                "name": "W",
+                "type": "string",
+                "description" : "The number of wins the team has"
+            },
+            {
+                "name": "L",
+                "type": "string",
+                "description": "The number of losses the team has"
+            },
+            {
+                "name": "W-L%",
+                "type": "string",
+                "description": "The team's win to lose ratio"
+            },
+            {
+                "name": "GB",
+                "type": "string",
+                "description": "The number of games behind the team is from first place."
+            }
+        ]
+        }
+        }
+      }
+    }
+  }
+}
