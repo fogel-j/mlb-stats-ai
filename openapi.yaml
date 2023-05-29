@@ -24,7 +24,10 @@ paths:
                         schema: 
                             $ref: "#/components/schemas/standings"
 
-             
+    /news:
+        get:
+            operationId: getNews
+            summary: Retrieves news articles for players and teams from main stream media outlets. 
 
                 
     /players:
