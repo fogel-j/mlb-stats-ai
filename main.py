@@ -40,6 +40,7 @@ async def get_news():
 
     return quart.Response(json.dumps(team_articles, ensure_ascii=False))
 
+#Testing commit info
 
 @app.get("/players")
 async def get_players():
