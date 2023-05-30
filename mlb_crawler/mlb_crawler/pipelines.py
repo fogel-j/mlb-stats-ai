@@ -7,7 +7,14 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 
-
+# Using this class we can process the items as we wish
 class MlbCrawlerPipeline:
+    def __init__(self):
+        self.items = []
+
     def process_item(self, item, spider):
+        self.items.append(item)
         return item
+
+    def close_spider(self, spider):
+        return self.items

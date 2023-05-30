@@ -27,7 +27,20 @@ paths:
     /news:
         get:
             operationId: getNews
-            summary: Retrieves news articles for players and teams from main stream media outlets. 
+            summary: Retrieves up to date news articles for teams from mlb.com. 
+            parameters:
+              - in: query
+                name: team_name
+                schema:
+                  type: string
+                  description: Used to filter out relevant news articles for the team being specified.
+            responses:
+              "200":
+                description: OK
+                content:
+                  application/json:
+                    schemas:
+                      type: array
 
                 
     /players:

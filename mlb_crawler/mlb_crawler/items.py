@@ -6,7 +6,12 @@
 import scrapy
 
 
-class MlbCrawlerItem(scrapy.Item):
+class MlbNewsItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    team = scrapy.Field()
+    link = scrapy.Field()
+    headline = scrapy.Field()
+    date = scrapy.Field()
+    content = scrapy.Field()
+

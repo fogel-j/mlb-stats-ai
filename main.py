@@ -1,19 +1,22 @@
 import json
 import requests
 import urllib.parse
+import asyncio
 
 import quart
 import quart_cors
-from quart import request
+from quart import request, jsonify
 
 from pybaseball import standings
 import pandas as pd
+
 
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
 HOST_URL = "http://localhost:5003"
 ESPN_URL = "https://www.espn.com"
+
 
 @app.get("/standings")
 async def get_standings():
@@ -29,7 +32,13 @@ async def get_standings():
 @app.get("/news")
 async def get_news():
     # Return relevant news articles for the team or player being asked about
-    pass
+    team_name = request.args.get("team_name")
+    with open('mlb_crawler/mlb_news.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    #Filter articles based on the specified team name
+    team_articles = [article for article in data if article['team'] == team_name]
+
+    return quart.Response(json.dumps(team_articles, ensure_ascii=False))
 
 
 @app.get("/players")

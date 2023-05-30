@@ -12,6 +12,7 @@ BOT_NAME = "mlb_crawler"
 SPIDER_MODULES = ["mlb_crawler.spiders"]
 NEWSPIDER_MODULE = "mlb_crawler.spiders"
 
+SPLASH_URL = 'http://192.168.6.129:8050' #Added for the javascript-able scrapy extension
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "mlb_crawler (+http://www.yourdomain.com)"
@@ -50,10 +51,12 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "mlb_crawler.middlewares.MlbCrawlerDownloaderMiddleware": 543,
-#}
-
+'''DOWNLOADER_MIDDLEWARES = {
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+}
+'''
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
@@ -62,9 +65,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "mlb_crawler.pipelines.MlbCrawlerPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "mlb_crawler.pipelines.MlbCrawlerPipeline": 1,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
