@@ -59,6 +59,25 @@ paths:
                 application/json:
                   schema:
                     type: object
+    
+    /pitching_stats_fangraphs:
+      get:
+          operationId: getPitchingStatsFangraphs
+          summary: Retrieves all pitching statistics from FanGraphs for the season being inputted.
+          parameters:
+            - in: query
+              name: year
+              schema: 
+              type: integer
+              description: Used to filter pitching statistics based on the year inserted. 
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+            
 
 
                 
