@@ -41,6 +41,25 @@ paths:
                   application/json:
                     schemas:
                       type: array
+    
+    /batting_stats_fangraphs:
+      get:
+          operationId: getBattingStatsFangraphs
+          summary: Retrieves all batting statistics from FanGraphs for the season being inputted. 
+          parameters:
+            - in: query
+              name: year
+              schema:
+                type: integer
+                description: Used to filter batting statistics based on the year being specified.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+
 
                 
     /players:
