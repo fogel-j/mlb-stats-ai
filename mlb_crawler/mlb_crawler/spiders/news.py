@@ -1,5 +1,6 @@
 import scrapy
 from ..items import MlbNewsItem
+import datetime
 
 
 class MlbSpider(scrapy.Spider):
@@ -12,7 +13,7 @@ class MlbSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT': 'json',
-        'FEED_URI': 'mlb_news.json'
+        'FEED_URI': 'scraped_data/mlb_news_%s.json' % datetime.datetime.now().strftime('%Y%m%d_%H%M%S') #Output file is timestamped with the current time
     }
     teams = ['whitesox', 'guardians', 'tigers', 'royals', 'twins' , 'cubs' , 'reds' , 'brewers' , 'pirates', \
      'cardinals', 'orioles', 'redsox', 'yankees', 'rays', 'bluejays', 'braves', 'marlins', 'mets', \

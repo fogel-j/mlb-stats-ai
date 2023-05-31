@@ -1,7 +1,7 @@
 import json
 import requests
 import urllib.parse
-import asyncio
+import os
 
 import quart
 import quart_cors
@@ -31,16 +31,24 @@ async def get_standings():
 
 @app.get("/news")
 async def get_news():
-    # Return relevant news articles for the team or player being asked about
+    # Return relevant news articles for the team being asked about
     team_name = request.args.get("team_name")
-    with open('mlb_crawler/mlb_news.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    #Filter articles based on the specified team name
-    team_articles = [article for article in data if article['team'] == team_name]
 
-    return quart.Response(json.dumps(team_articles, ensure_ascii=False))
+    directory_path = 'C:/Users/joefo/dev/baseball-stats-ai/scraped_data' # Change upon deployment to hosting service
+    all_files = os.listdir(directory_path)
+    news_files = [f for f in all_files if f.startswith('mlb_news')]
 
-#Testing commit 
+    articles = []
+    for filename in news_files:
+        with open(os.path.join(directory_path, filename)) as file:
+            data = json.load(file)
+            # Filter articles for the requested team
+            team_articles = [article for article in data if article['team'] == team_name]
+            articles.extend(team_articles)
+
+
+    return quart.Response(json.dumps(articles, ensure_ascii=False), content_type='application/json')
+
 
 @app.get("/players")
 async def get_players():
