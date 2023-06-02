@@ -13,6 +13,7 @@ paths:
             parameters:
                 - in: query
                   name: year
+                  required: true
                   schema:
                     type: integer
                   description: Used to filter the year the overall standings should be returned for.
@@ -31,9 +32,10 @@ paths:
             parameters:
               - in: query
                 name: team_name
+                required: true
                 schema:
                   type: string
-                  description: Used to filter out relevant news articles for the team being specified.
+                description: Used to filter out relevant news articles for the team being specified.
             responses:
               "200":
                 description: OK
@@ -49,9 +51,10 @@ paths:
           parameters:
             - in: query
               name: year
+              required: true
               schema:
                 type: integer
-                description: Used to filter batting statistics based on the year being specified.
+              description: Used to filter batting statistics based on the year being specified.
           responses:
             "200":
               description: OK
@@ -67,8 +70,9 @@ paths:
           parameters:
             - in: query
               name: year
+              required: true
               schema: 
-              type: integer
+                type: integer
               description: Used to select which season the pitching statistics will be retrieved from. 
           responses:
             "200":
@@ -81,16 +85,36 @@ paths:
     /team_batting:
       get:
           operationId: getTeamBatting
-          summary: Retrieves a team's combined batting statistics for the season being inputted.
+          summary: Retrieves all teams' combined batting statistics for the season being inputted.
           parameters:
             - in: query
               name: year
+              required: true
               schema: 
-              type: integer
+                type: integer
               description: Used to select which season the team batting statistics will be retrieved from.
           responses:
             "200":
               description: OK
+              content:
+                application/json:
+                  schema: 
+                    type: object
+
+    /team_fielding:
+      get: 
+          operationId: getTeamFielding
+          summary: Retrieves all the teams combined fielding statistics for the provided season
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema: 
+                type: integer
+              description: Used to select which season the team fielding statistics will be retrieved from. 
+          responses: 
+            "200":
+              description: A complex JSON object response
               content:
                 application/json:
                   schema: 

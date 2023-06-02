@@ -7,7 +7,7 @@ import quart
 import quart_cors
 from quart import request, jsonify
 
-from pybaseball import standings, batting_stats, pitching_stats, team_batting
+from pybaseball import standings, batting_stats, pitching_stats, team_batting, team_fielding
 import pandas as pd
 
 
@@ -73,12 +73,22 @@ async def get_pitching_stats_fangraphs():
 
 @app.get("/team_batting")
 async def get_team_batting():
-    # Return the all teams' batting statistics from FanGraphs for the provided season
+    # Return all the teams combined batting statistics from FanGraphs for the provided season
     year = request.args.get("year")
     team_batting_stats = team_batting(year)
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='table'))
 
     return quart.Response(json.dumps(team_batting_stats), content_type='application/json')
+
+@app.get("/team_fielding")
+async def get_team_fielding():
+    # Return all the teams combined fielding statistics for the provided season
+    year = request.args.get("year")
+    team_fielding_stats = team_fielding(year)
+    team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='table'))
+
+    return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
+
 
 
 @app.get("/players")
