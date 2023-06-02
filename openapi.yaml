@@ -24,7 +24,7 @@ paths:
                     content:
                       application/json:
                         schema: 
-                            $ref: "#/components/schemas/standings"
+                            $ref: '#/components/schemas/standings'
 
     /news:
         get:
@@ -139,6 +139,31 @@ paths:
               application/json:
                 schema: 
                   type: object
+
+    /statcast_playerid_lookup:
+        get:
+            operationId: getPlayerIdLookup
+            summary: Retrieves a player ID value to be used with other statcast data retrieval functions. 
+            parameters:
+              - in: query
+                name: first
+                required: true
+                description: A player's first name.
+                schema: 
+                  type: string 
+              - in: query
+                name: last
+                required: true
+                description: A player's last name.
+                schema: 
+                  type: string
+            responses:
+              "200":
+                description: >
+                  A player ID should be returned. This ID can be used to retrieve other statistics from statcast functions. 
+                  This ID will not be useful for a user. The model should use this for querying individual player statistics.
+                
+
                 
     /players:
         get:

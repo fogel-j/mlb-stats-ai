@@ -7,7 +7,11 @@ import quart
 import quart_cors
 from quart import request, jsonify
 
-from pybaseball import standings, batting_stats, pitching_stats, team_batting, team_fielding, team_pitching
+# Python baseball stat retrieval imports
+from pybaseball import \
+standings, batting_stats, pitching_stats, team_batting, team_fielding, \
+team_pitching, playerid_lookup
+
 import pandas as pd
 
 
@@ -51,7 +55,7 @@ async def get_news():
 
 @app.get("/batting_stats_fangraphs")
 async def get_batting_stats_fangraphs():
-    # Return batting statistics at a season level from FanGraphs
+    # Return batting statistics at a season level from FanGraphs at a player-level
     # To see what data is being collected refer to 
     # https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=8&season=2023&month=0&season1=2023&ind=0&team=0&rost=0&age=0&filter=&players=0&startdate=2023-01-01&enddate=2023-12-31&sort=22,d
     
@@ -63,7 +67,7 @@ async def get_batting_stats_fangraphs():
 
 @app.get("/pitching_stats_fangraphs")
 async def get_pitching_stats_fangraphs():
-    # Return pitching statistics at a season level from FanGraphs
+    # Return pitching statistics at a season level from FanGraphs at a player-level
     
     year = request.args.get("year")
     pitching = pitching_stats(year)
@@ -89,7 +93,7 @@ async def get_team_fielding():
 
     return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
 
-@app.get("team_pitching")
+@app.get("/team_pitching")
 async def get_team_pitching():
     # Return all the teams combined pitching statistics for the provided season
     year = request.args.get("year")
@@ -97,6 +101,28 @@ async def get_team_pitching():
     team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='table'))
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
+
+# Statcast routes
+@app.get("/statcast_playerid_lookup")
+async def get_statcast_playerid_lookup():
+    # Retrieves the player id based on a players name that is given
+    first_name = request.args.get("first")
+    last_name = request.args.get("last")
+    playerid = playerid_lookup(last_name, first_name)
+
+    #If multiple players have the same name or multiple results are returned for the function 
+    if len(playerid.index) > 1:
+        heading = 'Multiple MLB players found with the same name\n\n'
+        body = playerid[['name_last', 'name_first', 'key_mlbam', 'mlb_played_first', 'mlb_played_last']]
+        body = body.to_markdown()
+        return quart.Response(response=heading+body, status=500, content_type='text/markdown')
+        # There is some testing that should be done with this function once we get developer access
+        # We want another prompt that can handle a specific ID value being passed after the error is returned
+    
+    playerid = json.loads(playerid.to_json(orient='table'))
+
+    return quart.Response(json.dumps(playerid), content_type='application/json', status=200)
+
 
 @app.get("/players")
 async def get_players():
