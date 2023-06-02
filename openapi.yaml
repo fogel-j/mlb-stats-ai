@@ -10,6 +10,7 @@ paths:
         get:
             operationId: getStandings
             summary: Retrieves the overall standings for all teams across the MLB depending on the year that is supplied.
+            description: The operation will retrieve the ranking of every team within their respective division across Major League Baseball (MLB). 
             parameters:
                 - in: query
                   name: year
@@ -120,7 +121,24 @@ paths:
                   schema: 
                     type: object
 
-
+    /team_pitching:
+      get: 
+        operationId: getTeamPitching
+        summary: Retrieves all the teams combined pitching statistics for the provided season
+        parameters:
+          - in: query
+            name: year
+            required: true
+            description: Used to select which season the team fielding statistics will be retrieved from
+            schema: 
+              type: integer
+        responses:
+          "200":
+            description: A complex JSON object response
+            content:
+              application/json:
+                schema: 
+                  type: object
                 
     /players:
         get:
