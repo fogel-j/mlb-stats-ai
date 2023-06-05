@@ -24,7 +24,7 @@ paths:
                     content:
                       application/json:
                         schema: 
-                            $ref: '#/components/schemas/standings'
+                            $ref: '#/components/schemas/getStandingsResponse'
 
     /news:
         get:
@@ -162,7 +162,49 @@ paths:
                 description: >
                   A player ID should be returned. This ID can be used to retrieve other statistics from statcast functions. 
                   This ID will not be useful for a user. The model should use this for querying individual player statistics.
-                
+              "500":
+                description: Error. Multiple players and their IDs are returned. Display the results in a markdown table. 
+
+    /statcast_batter:
+        get:
+            operationId: getStatcastBatter
+            summary: Retrieves pitch-level statistics for a batter over a given time period. 
+            parameters:
+              - in: query
+                name: start_date
+                required: false
+                description: The starting date from which data will be retrieved from. If no value is given, the function will use yesterday's date by default. 
+                schema:
+                  type: string
+                  format: date
+                  description: The date in the format of 'YYYY-MM-DD'.
+              - in: query
+                name: ending_date
+                required: false
+                description: The last day from which you want to retrieve data. If no value is provided, the function will use the current day by default. 
+                schema: 
+                  type: string
+                  format: date
+                  description: The date in the format of 'YYYY-MM-DD'. 
+              - in: query
+                name: key_mlbam
+                required: true
+                description: >
+                  The MLBAM player ID of the player you want to retrieve data for. This value can be retrieved by invoking 
+                  the operation with operationId 'getPlayerIdLookup'.
+                schema: 
+                  type: integer
+            responses:
+              "200":
+                description: A complex JSON object response
+                content:
+                  application/json:
+                    schema:
+                      type: object
+              "500":
+                description: Error. Starting date is before the year 2008. This is before statcast data starting being collected. 
+                  
+
 
                 
     /players:

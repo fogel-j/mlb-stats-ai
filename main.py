@@ -2,6 +2,7 @@ import json
 import requests
 import urllib.parse
 import os
+from datetime import datetime
 
 import quart
 import quart_cors
@@ -10,7 +11,7 @@ from quart import request, jsonify
 # Python baseball stat retrieval imports
 from pybaseball import \
 standings, batting_stats, pitching_stats, team_batting, team_fielding, \
-team_pitching, playerid_lookup
+team_pitching, playerid_lookup, statcast_batter
 
 import pandas as pd
 
@@ -119,9 +120,28 @@ async def get_statcast_playerid_lookup():
         # There is some testing that should be done with this function once we get developer access
         # We want another prompt that can handle a specific ID value being passed after the error is returned
     
+    #Test with the model to see if it can retrieve the key_mlbam from the output and adjust the YAML file accordingly
     playerid = json.loads(playerid.to_json(orient='table'))
 
     return quart.Response(json.dumps(playerid), content_type='application/json', status=200)
+
+@app.get("/statcast_batter")
+async def get_statcast_batter():
+    #Retrieves detailed pitch-level statcast information about a player's batting performance over a given time period.  
+    starting_date = request.args.get('start_date')
+    ending_date = request.args.get('ending_date')
+    mlbam_player_id = request.args.get('key_mlbam')
+
+    date_format = "%Y-%m-%d"
+    date = datetime.strptime(starting_date, date_format)
+    if date.year < 2008:
+        return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
+
+    batter_stats = statcast_batter(starting_date,ending_date,mlbam_player_id)
+    batter_stats = json.loads(batter_stats.to_json(orient='table'))
+
+    return quart.Response(json.dumps(batter_stats), content_type='application/json')
+
 
 
 @app.get("/players")
