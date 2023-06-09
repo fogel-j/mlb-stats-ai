@@ -11,7 +11,7 @@ from quart import request, jsonify
 # Python baseball stat retrieval imports
 from pybaseball import \
 standings, batting_stats, pitching_stats, team_batting, team_fielding, \
-team_pitching, playerid_lookup, statcast_batter
+team_pitching, playerid_lookup, statcast_batter, statcast_outs_above_average
 
 import pandas as pd
 
@@ -132,6 +132,7 @@ async def get_statcast_batter():
     ending_date = request.args.get('ending_date')
     mlbam_player_id = request.args.get('key_mlbam')
 
+    #Statcast data is only available from 2008 onward. An error is returned for queries before that. 
     date_format = "%Y-%m-%d"
     date = datetime.strptime(starting_date, date_format)
     if date.year < 2008:
@@ -141,6 +142,25 @@ async def get_statcast_batter():
     batter_stats = json.loads(batter_stats.to_json(orient='table'))
 
     return quart.Response(json.dumps(batter_stats), content_type='application/json')
+
+@app.get("/statcast_fielding")
+async def get_statcast_fielding():
+    #Retrieves the fielding stat 'Outs Above Average' for all players across the league with a provided year
+    year = request.args.get('year')
+    
+    if int(year) < 2008:
+        return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
+    
+    
+    fielding = statcast_outs_above_average(year,'all')
+    fielding = fielding.sort_values(by=['outs_above_average'],ascending=False)
+    fielding = json.loads(fielding.to_json(orient='table'))
+
+    # TODO - There are more stats that can be retrieved for player fielding from pybaseball. Testing should be done with model for the other functions
+
+    return quart.Response(json.dumps(fielding), content_type='application/json')
+
+
 
 
 

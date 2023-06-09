@@ -203,7 +203,30 @@ paths:
                       type: object
               "500":
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected. 
-                  
+    
+    /statcast_fielding:
+        get: 
+          operationId: getStatcastFielding
+          summary: Retrieves fielding statstics for all players across the MLB for a given year.
+          parameters:
+            - in: query
+              name: year
+              required: true
+              description: The year that fielding statistics should be retrieved from.
+              schema: 
+                type: integer
+          responses:
+            "200":
+              description: A complext JSON object response 
+              content:
+                application/json:
+                  schema: 
+                    type: object
+            "500": 
+              description: Error. Statcast data can't be retrieved for years before 2008. 
+
+    
+            
 
 
                 

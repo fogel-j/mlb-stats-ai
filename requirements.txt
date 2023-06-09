@@ -3,3 +3,4 @@ quart-cors
 pybaseball
 tabulate
 pandas
+Scrapy
