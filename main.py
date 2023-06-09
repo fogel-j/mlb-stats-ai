@@ -11,7 +11,8 @@ from quart import request, jsonify
 # Python baseball stat retrieval imports
 from pybaseball import \
 standings, batting_stats, pitching_stats, team_batting, team_fielding, \
-team_pitching, playerid_lookup, statcast_batter, statcast_outs_above_average
+team_pitching, playerid_lookup, statcast_batter, statcast_outs_above_average, \
+statcast_pitcher
 
 import pandas as pd
 
@@ -160,7 +161,24 @@ async def get_statcast_fielding():
 
     return quart.Response(json.dumps(fielding), content_type='application/json')
 
+@app.get("/statcast_pitcher")
+async def get_statcast_pitcher():
+    #Retrieves pitch-level statistics for a pitcher
+    starting_date = request.args.get('start_date')
+    ending_date = request.args.get('ending_date')
+    mlbam_player_id = request.args.get('key_mlbam')
 
+    #Statcast data is only available from 2008 onward. An error is returned for queries before that. 
+    date_format = "%Y-%m-%d"
+    date = datetime.strptime(starting_date, date_format)
+    if date.year < 2008:
+        return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
+
+    pitching = statcast_pitcher(starting_date,ending_date,mlbam_player_id)
+    pitching = json.loads(pitching.to_json(orient='table'))
+
+
+    return quart.Response(json.dumps(pitching), content_type='application/json')
 
 
 
