@@ -45,10 +45,10 @@ paths:
                     schemas:
                       type: array
     
-    /batting_stats_fangraphs:
+    /batting_stats_bref:
       get:
-          operationId: getBattingStatsFangraphs
-          summary: Retrieves all batting statistics from FanGraphs for the season being inputted. 
+          operationId: getBattingStatsBaseballReference
+          summary: Retrieves all batting statistics from Baseball Reference for the season being inputted. 
           parameters:
             - in: query
               name: year
@@ -64,10 +64,10 @@ paths:
                   schema:
                     type: object
     
-    /pitching_stats_fangraphs:
+    /pitching_stats_bref:
       get:
-          operationId: getPitchingStatsFangraphs
-          summary: Retrieves all pitching statistics from FanGraphs for the season being inputted.
+          operationId: getPitchingStatsBaseballReference
+          summary: Retrieves all pitching statistics from Baseball Reference for the season being inputted.
           parameters:
             - in: query
               name: year
@@ -86,8 +86,15 @@ paths:
     /team_batting:
       get:
           operationId: getTeamBatting
-          summary: Retrieves all teams' combined batting statistics for the season being inputted.
+          summary: Retrieves the batting statistics for all players on a team for the season being inputted.
           parameters:
+            - in: query
+              name: team_abbreviation
+              required: true
+              schema:
+                type: string
+              description: The 3 letter abbreviated name of the baseball team.
+              example: NYY
             - in: query
               name: year
               required: true
@@ -264,148 +271,4 @@ paths:
               "500":
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected.  
             
-
-    
-    /players:
-        get:
-            operationId: getPlayers
-            summary: Retrieves all players from all seasons whose names match the query string.
-            parameters:
-                - in: query
-                  name: query
-                  schema:
-                      type: string
-                  description: Used to filter players based on their name. For example, ?query=davis will return players that have 'davis' in their first or last name.
-            responses:
-                "200":
-                    description: OK
-    /teams:
-        get:
-            operationId: getTeams
-            summary: Retrieves all teams for the current season.
-            responses:
-                "200":
-                    description: OK
-    /games:
-        get:
-            operationId: getGames
-            summary: Retrieves all games that match the filters specified by the args. Display results using markdown tables.
-            parameters:
-                - in: query
-                  name: limit
-                  schema:
-                      type: string
-                  description: The max number of results to return.
-                - in: query
-                  name: seasons
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  description: Filter by seasons. Seasons are represented by the year they began. For example, 2018 represents season 2018-2019.
-                - in: query
-                  name: team_ids
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  description: Filter by team ids. Team ids can be determined using the getTeams function.
-                - in: query
-                  name: start_date
-                  schema:
-                      type: string
-                  description: A single date in 'YYYY-MM-DD' format. This is used to select games that occur on or after this date.
-                - in: query
-                  name: end_date
-                  schema:
-                      type: string
-                  description: A single date in 'YYYY-MM-DD' format. This is used to select games that occur on or before this date.
-            responses:
-                "200":
-                    description: OK
-    /stats:
-        get:
-            operationId: getStats
-            summary: Retrieves stats that match the filters specified by the args. Display results using markdown tables.
-            parameters:
-                - in: query
-                  name: limit
-                  schema:
-                      type: string
-                  description: The max number of results to return.
-                - in: query
-                  name: player_ids
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  description: Filter by player ids. Player ids can be determined using the getPlayers function.
-                - in: query
-                  name: game_ids
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  description: Filter by game ids. Game ids can be determined using the getGames function.
-                - in: query
-                  name: start_date
-                  schema:
-                      type: string
-                  description: A single date in 'YYYY-MM-DD' format. This is used to select games that occur on or after this date.
-                - in: query
-                  name: end_date
-                  schema:
-                      type: string
-                  description: A single date in 'YYYY-MM-DD' format. This is used to select games that occur on or before this date.
-            responses:
-                "200":
-                    description: OK
-    /season_averages:
-        get:
-            operationId: getSeasonAverages
-            summary: Retrieves regular season averages for the given players. Display results using markdown tables.
-            parameters:
-                - in: query
-                  name: season
-                  schema:
-                      type: string
-                  description: Defaults to the current season. A season is represented by the year it began. For example, 2018 represents season 2018-2019.
-                - in: query
-                  name: player_ids
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  description: Filter by player ids. Player ids can be determined using the getPlayers function.
-            responses:
-                "200":
-                    description: OK
-
-components:
-  schemas:
-    getStandingsResponse:
-        type: object
-        properties:
-            overall_standings:
-                type: array
-                items:
-                - name: index
-                  type: integer
-                  description: The team's ranking in the division.
-                - name: Tm
-                  type: string
-                  description: The team's name.
-                - name: W
-                  type: string
-                  description: The number of wins the team has.
-                - name: L
-                  type: string
-                  description: The number of losses the team has.
-                - name: W-L%
-                  type: string
-                  description: The team's win to loss ratio.
-                - name: GB
-                  type: string
-                  description: The number of games the team is behind first place.
-
                 

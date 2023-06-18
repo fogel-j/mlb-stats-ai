@@ -4,3 +4,4 @@ pybaseball
 tabulate
 pandas
 Scrapy
+tiktoken
