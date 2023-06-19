@@ -63,14 +63,14 @@ async def get_news():
 async def get_batting_stats_bref():
     # Return batting statistics at a season level from Baseball Reference
     # To see what data is being collected refer to 
-    # https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=8&season=2023&month=0&season1=2023&ind=0&team=0&rost=0&age=0&filter=&players=0&startdate=2023-01-01&enddate=2023-12-31&sort=22,d
+    # 
 
     year = request.args.get("year")
 
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
-    batting = batting_stats_bref(int(year))
+    batting = batting_stats_bref(year)
     batting = json.loads(batting.to_json(orient='table'))
     print(helper.num_tokens(batting))
 
@@ -80,13 +80,13 @@ async def get_batting_stats_bref():
 async def get_pitching_stats_bref():
     # Return pitching statistics at a season level from Baseball Reference
     
-    year = request.args.get("year")
-
+    year = int(request.args.get("year"))
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
     pitching = pitching_stats_bref(int(year))
     pitching = json.loads(pitching.to_json(orient='table'))
+    print(helper.num_tokens(pitching))
 
     return quart.Response(json.dumps(pitching), content_type='application/json')
 
@@ -144,8 +144,7 @@ async def get_statcast_playerid_lookup():
 @app.get("/statcast_batter")
 async def get_statcast_batter():
     #Retrieves detailed pitch-level statcast information about a player's batting performance over a given time period.  
-    starting_date = request.args.get('start_date')
-    ending_date = request.args.get('ending_date')
+    starting_date = request.args.get('date')
     mlbam_player_id = request.args.get('key_mlbam')
 
     #Statcast data is only available from 2008 onward. An error is returned for queries before that.
@@ -157,9 +156,9 @@ async def get_statcast_batter():
         if date.year < 2008:
             return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
 
-    batter_stats = statcast_batter(starting_date,ending_date,mlbam_player_id)
-    #Retrieving only the first 30 columns because of output limitations
-    batter_stats = batter_stats.iloc[:, :30]
+    batter_stats = statcast_batter(start_dt=starting_date,player_id=mlbam_player_id)
+    #Retrieving only the first 26 columns because of output limitations
+    batter_stats = batter_stats.iloc[:, :26]
 
     batter_stats = json.loads(batter_stats.to_json(orient='table'))
     print(helper.num_tokens(str(batter_stats)))
@@ -169,16 +168,17 @@ async def get_statcast_batter():
 @app.get("/statcast_fielding")
 async def get_statcast_fielding():
     #Retrieves the fielding stat 'Outs Above Average' for all players across the league with a provided year
-    year = request.args.get('year')
+    year = int(request.args.get('year'))
+    pos_abbr = str(request.args.get('position_abbreviation'))
     
     if int(year) < 2008:
         return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
     
     
-    fielding = statcast_outs_above_average(year,'all')
+    fielding = statcast_outs_above_average(year,pos=pos_abbr)
     fielding = fielding.sort_values(by=['outs_above_average'],ascending=False)
     fielding = json.loads(fielding.to_json(orient='table'))
-
+    print(helper.num_tokens(str(fielding)))
     # TODO - There are more stats that can be retrieved for player fielding from pybaseball. Testing should be done with model for the other functions
 
     return quart.Response(json.dumps(fielding), content_type='application/json')
@@ -186,18 +186,23 @@ async def get_statcast_fielding():
 @app.get("/statcast_pitcher")
 async def get_statcast_pitcher():
     #Retrieves pitch-level statistics for a pitcher
-    starting_date = request.args.get('start_date')
-    ending_date = request.args.get('ending_date')
+    starting_date = request.args.get('date')
     mlbam_player_id = request.args.get('key_mlbam')
 
     #Statcast data is only available from 2008 onward. An error is returned for queries before that. 
-    date_format = "%Y-%m-%d"
-    date = datetime.strptime(starting_date, date_format)
-    if date.year < 2008:
-        return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
+    if starting_date == None:
+        pass
+    else:
+        date_format = "%Y-%m-%d"
+        date = datetime.strptime(starting_date, date_format)
+        if date.year < 2008:
+            return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
 
-    pitching = statcast_pitcher(starting_date,ending_date,mlbam_player_id)
+    # TODO - There are more statcast pitching stats that can be retrieved from pybaseball. 
+
+    pitching = statcast_pitcher(start_dt=starting_date,player_id=mlbam_player_id)
     pitching = json.loads(pitching.to_json(orient='table'))
+    print(helper.num_tokens(pitching))
 
 
     return quart.Response(json.dumps(pitching), content_type='application/json')

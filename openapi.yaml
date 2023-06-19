@@ -24,7 +24,7 @@ paths:
                     content:
                       application/json:
                         schema: 
-                            $ref: '#/components/schemas/getStandingsResponse'
+                            type: array
 
     /news:
         get:
@@ -175,24 +175,16 @@ paths:
     /statcast_batter:
         get:
             operationId: getStatcastBatter
-            summary: Retrieves pitch-level statistics for a batter over a given time period. 
+            summary: Retrieves pitch-level statistics for a batter for a given date. 
             parameters:
               - in: query
-                name: start_date
-                required: false
-                description: The starting date from which data will be retrieved from. If no value is given, the function will use yesterday's date by default. 
+                name: date
+                required: true
+                description: The date that data should be retrieved from. 
                 schema:
                   type: string
                   format: date
                   description: The date in the format of 'YYYY-MM-DD'.
-              - in: query
-                name: ending_date
-                required: false
-                description: The last day from which you want to retrieve data. If no value is provided, the function will use the current day by default. 
-                schema: 
-                  type: string
-                  format: date
-                  description: The date in the format of 'YYYY-MM-DD'. 
               - in: query
                 name: key_mlbam
                 required: true
@@ -214,8 +206,15 @@ paths:
     /statcast_fielding:
         get: 
           operationId: getStatcastFielding
-          summary: Retrieves fielding statstics for all players across the MLB for a given year.
+          summary: Retrieves fielding statstics of a position over a season time frame.
           parameters:
+            - in: query
+              name: position_abbreviation
+              required: true
+              description: The two letter position abbreviation
+              schema:
+                type: string
+              example: SS
             - in: query
               name: year
               required: true
@@ -235,24 +234,16 @@ paths:
     /statcast_pitcher:
         get: 
           operationId: getStatcastPitcher
-          summary: Retrieves pitch-level statistics for a pitcher over a given time period.
+          summary: Retrieves pitch-level statistics for a pitcher for a specified date.
           parameters:
               - in: query
                 name: start_date
                 required: false
-                description: The starting date from which data will be retrieved from. If no value is given, the function will use yesterday's date by default. 
+                description: The date from which data will be retrieved. 
                 schema:
                   type: string
                   format: date
                   description: The date in the format of 'YYYY-MM-DD'.
-              - in: query
-                name: ending_date
-                required: false
-                description: The last day from which you want to retrieve data. If no value is provided, the function will use the current day by default. 
-                schema: 
-                  type: string
-                  format: date
-                  description: The date in the format of 'YYYY-MM-DD'. 
               - in: query
                 name: key_mlbam
                 required: true
