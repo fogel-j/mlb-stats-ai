@@ -86,7 +86,7 @@ paths:
     /team_batting:
       get:
           operationId: getTeamBatting
-          summary: Retrieves the batting statistics for all players on a team for the season being inputted.
+          summary: Retrieves the batting statistics from Baseball Reference for each player on the team for the provided season
           parameters:
             - in: query
               name: team_abbreviation
@@ -112,8 +112,15 @@ paths:
     /team_fielding:
       get: 
           operationId: getTeamFielding
-          summary: Retrieves all the teams combined fielding statistics for the provided season
+          summary: Retrieves the fielding statistics from Baseball Reference for each player on the team for the provided season
           parameters:
+            - in: query
+              name: team_abbreviation
+              required: true
+              schema:
+                type: string
+              description: The 3 letter abbreviated name of the baseball team.
+              example: NYY
             - in: query
               name: year
               required: true
@@ -131,8 +138,15 @@ paths:
     /team_pitching:
       get: 
         operationId: getTeamPitching
-        summary: Retrieves all the teams combined pitching statistics for the provided season
+        summary: Retrieves the pitching statistics from Baseball Reference for each player on the team for the provided season
         parameters:
+          - in: query
+            name: team_abbreviation
+            required: true
+            description: The 3 letter abbreviated name of the baseball team.
+            schema:
+              type: string
+            example: NYY
           - in: query
             name: year
             required: true
@@ -147,10 +161,10 @@ paths:
                 schema: 
                   type: object
 
-    /statcast_playerid_lookup:
+    /playerid_lookup:
         get:
             operationId: getPlayerIdLookup
-            summary: Retrieves a player ID value to be used with other statcast data retrieval functions. 
+            summary: Retrieves a player ID value to be used with other data retrieval functions. 
             parameters:
               - in: query
                 name: first
@@ -167,7 +181,7 @@ paths:
             responses:
               "200":
                 description: >
-                  A player ID should be returned. This ID can be used to retrieve other statistics from statcast functions. 
+                  A player IDs should be returned. This ID can be used to retrieve other statistics from functions. 
                   This ID will not be useful for a user. The model should use this for querying individual player statistics.
               "500":
                 description: Error. Multiple players and their IDs are returned. Display the results in a markdown table. 

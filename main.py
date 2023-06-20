@@ -63,9 +63,8 @@ async def get_news():
 async def get_batting_stats_bref():
     # Return batting statistics at a season level from Baseball Reference
     # To see what data is being collected refer to 
-    # 
 
-    year = request.args.get("year")
+    year = int(request.args.get("year"))
 
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
@@ -92,10 +91,10 @@ async def get_pitching_stats_bref():
 
 @app.get("/team_batting")
 async def get_team_batting():
-    # Return a team's combined batting statistics from Baseball Reference for the provided season
+    # Return the batting statistics from Baseball Reference for each player on the team for the provided season
     team_abr = request.args.get('team_abbreviation')
-    year = request.args.get("year")
-    team_batting_stats = team_batting_bref(team_abr,int(year))
+    year = int(request.args.get("year"))
+    team_batting_stats = team_batting_bref(team_abr,year)
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='table'))
     print(helper.num_tokens(team_batting_stats))
 
@@ -103,25 +102,29 @@ async def get_team_batting():
 
 @app.get("/team_fielding")
 async def get_team_fielding():
-    # Return all the teams combined fielding statistics for the provided season
-    year = request.args.get("year")
-    team_fielding_stats = team_fielding_bref(year)
+    # Return the fielding statistics from Baseball Reference for each player on the team for the provided season
+    team_abr = request.args.get('team_abbreviation')
+    year = int(request.args.get("year"))
+    team_fielding_stats = team_fielding_bref(team_abr,year)
     team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='table'))
+    print(helper.num_tokens(team_fielding_stats))
 
     return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
 
 @app.get("/team_pitching")
 async def get_team_pitching():
-    # Return all the teams combined pitching statistics for the provided season
-    year = request.args.get("year")
-    team_pitching_stats = team_pitching_bref(year)
+    # Return the pitching statistics from Baseball Reference for each player on the team for the provided season
+    team_abr = request.args.get('team_abbreviation')
+    year = int(request.args.get("year"))
+    team_pitching_stats = team_pitching_bref(team_abr,year)
     team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='table'))
+    print(helper.num_tokens(team_pitching_stats))
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
 
 # Statcast routes
-@app.get("/statcast_playerid_lookup")
-async def get_statcast_playerid_lookup():
+@app.get("/playerid_lookup")
+async def get_playerid_lookup():
     # Retrieves the player id based on a players name that is given
     first_name = request.args.get("first")
     last_name = request.args.get("last")
