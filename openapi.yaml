@@ -44,11 +44,39 @@ paths:
                   application/json:
                     schemas:
                       type: array
-    
+    /batting_stats_individual:
+      get:
+          operationId: getBattingStatsIndividual
+          summary: Retrieves batting statistics for an individual player for a given season
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema:
+                type: integer
+              description: Used to filter the player's batting statistics based on the year specified.
+            - in: query
+              name: key_fangraphs
+              required: true
+              schema:
+                type: integer
+              description: >
+                  The fangraphs player identifier. This value can be retrieved by invoking 
+                  the operation with operationId 'getPlayerIdLookup'.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/getBattingStatsIndividualResponse'
+
+
+
     /batting_stats_bref:
       get:
           operationId: getBattingStatsBaseballReference
-          summary: Retrieves all batting statistics from Baseball Reference for the season being inputted. 
+          summary: Retrieves a batting statistic for all players from Baseball Reference for the season being inputted
           parameters:
             - in: query
               name: year
@@ -56,6 +84,14 @@ paths:
               schema:
                 type: integer
               description: Used to filter batting statistics based on the year being specified.
+            - in: query
+              name: batting_stat
+              required: true
+              schema:
+                type: string
+                enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'BA', 'OBP', 'SLG', 'OPS']
+              description: Used to filter batting statistics based on the statistic being specified.
+                
           responses:
             "200":
               description: OK
@@ -277,3 +313,81 @@ paths:
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected.  
             
                 
+components:
+  schemas:
+    getBattingStatsIndividualResponse:
+      type: object
+      properties:
+        index:
+          type: integer
+        IDfg:
+          type: integer
+          description: The player identifier.
+        Season:
+          type: integer
+          description: The year the data is retrieved for.
+        Name:
+          type: string
+          description: The player's name
+        Team:
+          type: string
+          description: The 3-letter abbreviation of the team the player plays for.
+        Age:
+          type: integer
+          description: How old the player is for the year being queried.
+        G:
+          type: integer
+          description: The number of games the player played in for the season.
+        AB:
+          type: integer
+          description: The number of at-bats
+        PA:
+          type: integer
+        H:
+          type: integer
+          description: The number of hits
+        1B:
+          type: integer
+          description: The number of singles
+        2B:
+          type: integer
+          description: The number of doubles
+        3B:
+          type: integer
+          description: The number of triples
+        HR:
+          type: integer
+          description: The number of home runs
+        R:
+          type: integer
+          description: The number of runs
+        RBI:
+          type: integer
+          description: The number of runs batted in
+        BB:
+          type: integer
+          description: The number of base on balls - also know was walks
+        IBB:
+          type: integer
+          description: The number of times the player has been intentionally walked
+        SO:
+          type: integer
+          description: The number of strike outs
+        HBP:
+          type: integer
+        SF:
+          type: integer
+          description: The number of sacrifice flys
+        SH:
+          type: integer
+        GDP:
+          type: integer
+        SB:
+          type: integer
+          description: The number of stolen bases
+        CS:
+          type: integer
+          description: The number of times the player was caught stealing
+        AVG:
+          type: number
+          description: The player's batting average

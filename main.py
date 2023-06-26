@@ -14,7 +14,7 @@ from helpers import helper
 from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
-statcast_pitcher, top_prospects
+statcast_pitcher, top_prospects, batting_stats
 
 import pandas as pd
 
@@ -59,21 +59,39 @@ async def get_news():
     print(helper.num_tokens(articles))
     return quart.Response(json.dumps(articles, ensure_ascii=False), content_type='application/json', status=200)
 
+@app.get("/batting_stats_individual")
+async def get_batting_stats_individual():
+    #Retrieves an individual's batting statistics from Fangraphs, providing detailed 320 column batting information
+    year = int(request.args.get("year"))
+    fg_id = int(request.args.get("key_fangraphs"))
+    
+    batting = batting_stats(year)
+    individual_batting = batting[batting['IDfg'] == fg_id]
+    individual_batting = json.loads(individual_batting.to_json(orient='records'))
+
+    print(helper.num_tokens(individual_batting))
+
+    return quart.Response(json.dumps(individual_batting), content_type='application/json')
+
+
+
 @app.get("/batting_stats_bref")
 async def get_batting_stats_bref():
     # Return batting statistics at a season level from Baseball Reference
     # To see what data is being collected refer to 
 
     year = int(request.args.get("year"))
+    bat_stat = request.args.get("batting_stat")
 
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
     batting = batting_stats_bref(year)
-    batting = json.loads(batting.to_json(orient='table'))
+    result = batting[['Name',bat_stat]]
+    result = json.loads(result.to_json(orient='records'))
     print(helper.num_tokens(batting))
 
-    return quart.Response(json.dumps(batting),content_type='application/json')
+    return quart.Response(json.dumps(result),content_type='application/json')
 
 @app.get("/pitching_stats_bref")
 async def get_pitching_stats_bref():
@@ -118,6 +136,7 @@ async def get_team_pitching():
     year = int(request.args.get("year"))
     team_pitching_stats = team_pitching_bref(team_abr,year)
     team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='table'))
+    # team_pitching_stats = team_pitching_stats.to_markdown()
     print(helper.num_tokens(team_pitching_stats))
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
