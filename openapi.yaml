@@ -36,6 +36,10 @@ paths:
                 required: true
                 schema:
                   type: string
+                  enum: ['whitesox', 'guardians', 'tigers', 'royals', 'twins' , 'cubs' , 'reds' , 'brewers' , 'pirates', 
+                        'cardinals', 'orioles', 'redsox', 'yankees', 'rays', 'bluejays', 'braves', 'marlins', 'mets', 
+                        'phillies', 'nationals', 'astros', 'angels', 'athletics', 'mariners', 'rangers', 'diamondbacks', 
+                        'rockies', 'dodgers', 'padres', 'giants']
                 description: Used to filter out relevant news articles for the team being specified.
             responses:
               "200":
@@ -73,10 +77,10 @@ paths:
 
 
 
-    /batting_stats_bref:
+    /batting_stats:
       get:
           operationId: getBattingStatsBaseballReference
-          summary: Retrieves a batting statistic for all players from Baseball Reference for the season being inputted
+          summary: Retrieves a batting statistic for all players from Fangraphs for the season being inputted
           parameters:
             - in: query
               name: year
@@ -89,17 +93,28 @@ paths:
               required: true
               schema:
                 type: string
-                enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'BA', 'OBP', 'SLG', 'OPS']
+                enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'AVG', 'OBP', 'SLG', 'OPS']
               description: Used to filter batting statistics based on the statistic being specified.
-                
           responses:
             "200":
-              description: OK
+              description: >
+                Successful operation. The response is a sorted JSON object with the property "Name" 
+                and another property which is the value of the input "batting_stat". 
               content:
                 application/json:
                   schema:
-                    type: object
-    
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: The player's name
+                        batting_stat: 
+                          type: number
+                          description: The value of the batting stat inserted as an input to the function.
+
+
     /pitching_stats_bref:
       get:
           operationId: getPitchingStatsBaseballReference
@@ -143,7 +158,32 @@ paths:
               content:
                 application/json:
                   schema: 
-                    type: object
+                    type: array
+    
+    /team_batting_combined:
+        get:
+            operationId: getTeamBattingCombined
+            summary: >
+              Retrieves the combined batting statistics for all teams across the MLB from Fangraphs for the specified season.
+              This function should be used whenever a prompt is asking for combined statistics. 
+            parameters:
+              - in: query
+                name: year
+                required: true
+                schema: 
+                  type: integer
+                description: The year from which the batting statistics should be retrieved from
+            responses:
+              "200":
+                description: OK
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/getTeamBattingCombinedResponse'
+
+
 
     /team_fielding:
       get: 
@@ -343,6 +383,7 @@ components:
           description: The number of at-bats
         PA:
           type: integer
+          description: The number of plate appearances
         H:
           type: integer
           description: The number of hits
@@ -391,3 +432,52 @@ components:
         AVG:
           type: number
           description: The player's batting average
+    
+    getTeamBattingCombinedResponse:
+      type: object
+      properties:
+        Team:
+          type: string
+          description: >
+            The team's 3 letter abbreviation. All subsequent properties within the object 
+            are the team's combined batting statistics. 
+        teamIDfg:
+          type: integer
+        Season:
+          type: integer
+        Age:
+          type: integer
+          description: The average age of the team
+        G: 
+          type: integer
+        AB: 
+          type: integer
+          description: The combined total number of at-bats for the team
+        PA:
+          type: integer
+          description: The combined total number of plate appearances for the team
+        H:
+          type: integer
+          description: The combined total number of hits for the team
+        1B:
+          type: integer
+          description: The combined number of singles for the team
+        2B:
+          type: integer
+          description: The combined number of doubles for the team
+        3B:
+          type: integer
+          description: The combined number of triples for the team
+        AVG:
+          type: number
+          description: The team's combined batting average
+        GB: 
+          type: number
+          description: The combined total number of ground balls
+        FB:
+          type: number
+          description: The combined total number of fly balls
+        LD: 
+          type: number
+          description: The combined total number of line drives
+        

@@ -3,6 +3,7 @@ import requests
 import urllib.parse
 import os
 from datetime import datetime
+import itertools
 
 import quart
 import quart_cors
@@ -14,7 +15,7 @@ from helpers import helper
 from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
-statcast_pitcher, top_prospects, batting_stats
+statcast_pitcher, top_prospects, batting_stats, team_batting
 
 import pandas as pd
 
@@ -53,7 +54,8 @@ async def get_news():
             data = json.load(file)
             # Filter articles for the requested team
             team_name = team_name.lower()
-            team_articles = [article for article in data if article['team'] == team_name]
+            # Due to the current token prompt capacity, we must limit the number of articles collected
+            team_articles = list(itertools.islice((article for article in data if article['team'] == team_name), 7))
             articles.extend(team_articles)
 
     print(helper.num_tokens(articles))
@@ -65,7 +67,7 @@ async def get_batting_stats_individual():
     year = int(request.args.get("year"))
     fg_id = int(request.args.get("key_fangraphs"))
     
-    batting = batting_stats(year)
+    batting = batting_stats(year, qual=4)
     individual_batting = batting[batting['IDfg'] == fg_id]
     individual_batting = json.loads(individual_batting.to_json(orient='records'))
 
@@ -75,9 +77,9 @@ async def get_batting_stats_individual():
 
 
 
-@app.get("/batting_stats_bref")
+@app.get("/batting_stats")
 async def get_batting_stats_bref():
-    # Return batting statistics at a season level from Baseball Reference
+    # Return batting statistics at a season level for all players from Fangraphs
     # To see what data is being collected refer to 
 
     year = int(request.args.get("year"))
@@ -86,10 +88,12 @@ async def get_batting_stats_bref():
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
-    batting = batting_stats_bref(year)
+    batting = batting_stats(year)
     result = batting[['Name',bat_stat]]
+    result = result.sort_values(by=[bat_stat], ascending=False)
+    # table = table.to_markdown()
     result = json.loads(result.to_json(orient='records'))
-    print(helper.num_tokens(batting))
+    print(helper.num_tokens(result))
 
     return quart.Response(json.dumps(result),content_type='application/json')
 
@@ -113,7 +117,23 @@ async def get_team_batting():
     team_abr = request.args.get('team_abbreviation')
     year = int(request.args.get("year"))
     team_batting_stats = team_batting_bref(team_abr,year)
-    team_batting_stats = json.loads(team_batting_stats.to_json(orient='table'))
+    team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
+    print(helper.num_tokens(team_batting_stats))
+
+    return quart.Response(json.dumps(team_batting_stats), content_type='application/json')
+
+
+@app.get("/team_batting_combined")
+async def get_team_batting_combined():
+    # Returns the combined batting statistics for each team across the MLB for the season being specified
+    year = int(request.args.get("year"))
+    team_batting_stats = team_batting(year)
+    cols = team_batting_stats.columns.to_list()
+    cols = [cols[2]] + cols[:2] + cols[3:]
+    team_batting_stats = team_batting_stats[cols]
+    team_batting_stats = team_batting_stats.iloc[:, :40] # consider adding more columns
+        
+    team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
     print(helper.num_tokens(team_batting_stats))
 
     return quart.Response(json.dumps(team_batting_stats), content_type='application/json')
@@ -141,7 +161,6 @@ async def get_team_pitching():
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
 
-# Statcast routes
 @app.get("/playerid_lookup")
 async def get_playerid_lookup():
     # Retrieves the player id based on a players name that is given
