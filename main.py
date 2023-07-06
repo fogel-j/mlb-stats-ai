@@ -24,7 +24,6 @@ import pandas as pd
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
 PLUGIN_HOSTNAME = "localhost:5003"
-ESPN_URL = "https://www.espn.com"
 
 
 @app.get("/standings")
@@ -67,7 +66,7 @@ async def get_batting_stats_individual():
     year = int(request.args.get("year"))
     fg_id = int(request.args.get("key_fangraphs"))
     
-    batting = batting_stats(year, qual=4)
+    batting = batting_stats(year)
     individual_batting = batting[batting['IDfg'] == fg_id]
     individual_batting = json.loads(individual_batting.to_json(orient='records'))
 
@@ -127,11 +126,17 @@ async def get_team_batting():
 async def get_team_batting_combined():
     # Returns the combined batting statistics for each team across the MLB for the season being specified
     year = int(request.args.get("year"))
+    team_abr = request.args.get('team_abbreviation')
     team_batting_stats = team_batting(year)
-    cols = team_batting_stats.columns.to_list()
-    cols = [cols[2]] + cols[:2] + cols[3:]
-    team_batting_stats = team_batting_stats[cols]
-    team_batting_stats = team_batting_stats.iloc[:, :40] # consider adding more columns
+    if team_abr != None:
+        team_batting_stats = team_batting_stats[team_batting_stats['Team'] == team_abr]
+    
+    else:
+        # Moving team abbreviation to the first column for easier model interpretation
+        cols = team_batting_stats.columns.to_list()
+        cols = [cols[2]] + cols[:2] + cols[3:]
+        team_batting_stats = team_batting_stats[cols]
+        team_batting_stats = team_batting_stats.iloc[:, :40] # consider adding more columns
         
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
     print(helper.num_tokens(team_batting_stats))

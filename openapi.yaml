@@ -48,6 +48,7 @@ paths:
                   application/json:
                     schemas:
                       type: array
+    
     /batting_stats_individual:
       get:
           operationId: getBattingStatsIndividual
@@ -173,6 +174,15 @@ paths:
                 schema: 
                   type: integer
                 description: The year from which the batting statistics should be retrieved from
+              - in: query
+                name: team_abbreviation
+                required: false
+                schema:
+                  type: string
+                description: >
+                  The 3 letter abbreviated name of the baseball team. This parameter should be passed 
+                  to get the combined statistics for a specific team. 
+                example: NYY
             responses:
               "200":
                 description: OK
