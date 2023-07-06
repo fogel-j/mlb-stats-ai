@@ -80,7 +80,7 @@ paths:
 
     /batting_stats:
       get:
-          operationId: getBattingStatsBaseballReference
+          operationId: getBattingStats
           summary: Retrieves a batting statistic for all players from Fangraphs for the season being inputted
           parameters:
             - in: query
@@ -94,7 +94,8 @@ paths:
               required: true
               schema:
                 type: string
-                enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'AVG', 'OBP', 'SLG', 'OPS']
+                enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'AVG', 
+                      'OBP', 'SLG', 'OPS']
               description: Used to filter batting statistics based on the statistic being specified.
           responses:
             "200":
@@ -116,10 +117,10 @@ paths:
                           description: The value of the batting stat inserted as an input to the function.
 
 
-    /pitching_stats_bref:
+    /starting_pitching_stats:
       get:
-          operationId: getPitchingStatsBaseballReference
-          summary: Retrieves all pitching statistics from Baseball Reference for the season being inputted.
+          operationId: getPitchingStatsFangraphs
+          summary: Retrieves a specific pitching statistic for all starting pitchers from Fangraphs for the season being inputted.
           parameters:
             - in: query
               name: year
@@ -127,6 +128,14 @@ paths:
               schema: 
                 type: integer
               description: Used to select which season the pitching statistics will be retrieved from. 
+            - in: query
+              name: pitching_stat 
+              required: true
+              schema:
+                type: string
+                enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
+                      'WHIP', 'BABIP', 'LOB%', 'FIP']
+              description: Used to filter pitching statistics based on the statistics inputted. 
           responses:
             "200":
               description: OK

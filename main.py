@@ -15,7 +15,7 @@ from helpers import helper
 from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
-statcast_pitcher, top_prospects, batting_stats, team_batting
+statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats
 
 import pandas as pd
 
@@ -75,10 +75,9 @@ async def get_batting_stats_individual():
     return quart.Response(json.dumps(individual_batting), content_type='application/json')
 
 
-
 @app.get("/batting_stats")
-async def get_batting_stats_bref():
-    # Return batting statistics at a season level for all players from Fangraphs
+async def get_batting_stats():
+    # Return a specific batting statistic at a season level for all players from Fangraphs
     # To see what data is being collected refer to 
 
     year = int(request.args.get("year"))
@@ -88,27 +87,31 @@ async def get_batting_stats_bref():
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
     batting = batting_stats(year)
-    result = batting[['Name',bat_stat]]
-    result = result.sort_values(by=[bat_stat], ascending=False)
+    filtered_batting = batting[['Name',bat_stat]]
+    filtered_batting = filtered_batting.sort_values(by=[bat_stat], ascending=False)
     # table = table.to_markdown()
-    result = json.loads(result.to_json(orient='records'))
-    print(helper.num_tokens(result))
+    filtered_batting = json.loads(filtered_batting.to_json(orient='records'))
+    print(helper.num_tokens(filtered_batting))
 
-    return quart.Response(json.dumps(result),content_type='application/json')
+    return quart.Response(json.dumps(filtered_batting),content_type='application/json')
 
-@app.get("/pitching_stats_bref")
-async def get_pitching_stats_bref():
-    # Return pitching statistics at a season level from Baseball Reference
+@app.get("/starting_pitching_stats")
+async def get_starting_pitching_stats():
+    # Return a specific pitching statistic at a season level for all starting pitcher players from Fangraphs
     
     year = int(request.args.get("year"))
+    pitching_stat = request.args.get("pitching_stat")
     if year < 2008:
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
-    pitching = pitching_stats_bref(int(year))
-    pitching = json.loads(pitching.to_json(orient='table'))
-    print(helper.num_tokens(pitching))
+    pitching = starting_pitching_stats(year)
+    filtered_pitching = pitching[['Name', pitching_stat]]
+    filtered_pitching = filtered_pitching.sort_values(by=[pitching_stat])
+    
+    filtered_pitching = json.loads(filtered_pitching.to_json(orient='records'))
+    print(helper.num_tokens(filtered_pitching))
 
-    return quart.Response(json.dumps(pitching), content_type='application/json')
+    return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
 
 @app.get("/team_batting")
 async def get_team_batting():
