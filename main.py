@@ -217,7 +217,7 @@ async def get_playerid_lookup():
         
     
     #Test with the model to see if it can retrieve the key_mlbam from the output and adjust the YAML file accordingly
-    playerid = json.loads(playerid.to_json(orient='table'))
+    playerid = json.loads(playerid.to_json(orient='records'))
 
     return quart.Response(json.dumps(playerid), content_type='application/json', status=200)
 
@@ -240,7 +240,7 @@ async def get_statcast_batter():
     #Retrieving only the first 26 columns because of output limitations
     batter_stats = batter_stats.iloc[:, :26]
 
-    batter_stats = json.loads(batter_stats.to_json(orient='table'))
+    batter_stats = json.loads(batter_stats.to_json(orient='records'))
     print(helper.num_tokens(str(batter_stats)))
 
     return quart.Response(json.dumps(batter_stats), content_type='application/json')
@@ -257,7 +257,7 @@ async def get_statcast_fielding():
     
     fielding = statcast_outs_above_average(year,pos=pos_abbr)
     fielding = fielding.sort_values(by=['outs_above_average'],ascending=False)
-    fielding = json.loads(fielding.to_json(orient='table'))
+    fielding = json.loads(fielding.to_json(orient='records'))
     print(helper.num_tokens(str(fielding)))
     # TODO - There are more stats that can be retrieved for player fielding from pybaseball. Testing should be done with model for the other functions
 
@@ -281,7 +281,7 @@ async def get_statcast_pitcher():
     # TODO - There are more statcast pitching stats that can be retrieved from pybaseball. 
 
     pitching = statcast_pitcher(start_dt=starting_date,player_id=mlbam_player_id)
-    pitching = json.loads(pitching.to_json(orient='table'))
+    pitching = json.loads(pitching.to_json(orient='records'))
     print(helper.num_tokens(pitching))
 
 
@@ -292,7 +292,15 @@ async def get_statcast_pitcher():
 async def get_top_prospects():
     #Retrieves the top prospects for a team or across the entire MLB
     team_name = request.args.get('team_name')
-    prospects = top_prospects(team_name)
+    player_type = request.args.get('player_type')
+    prospects = top_prospects(teamName=team_name,playerType=player_type)
+    # We must cut down to top 50 prospects due to rate limiting from OpenAI
+    prospects = prospects.head(50)
+
+    prospects = json.loads(prospects.to_json(orient='records'))
+    print(helper.num_tokens(prospects))
+
+    return quart.Response(json.dumps(prospects), content_type='application/json')
 
 
 @app.get("/logo.png")

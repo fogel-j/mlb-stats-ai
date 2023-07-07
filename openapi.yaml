@@ -425,7 +425,40 @@ paths:
                       type: object
               "500":
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected.  
-            
+    
+    /top_prospects:
+        get:
+          operationId: getTopProspects
+          summary: Retrieves the top prospects for a specific team or across all of the MLB for the current season.
+          parameters:
+            - in: query
+              name: team_name
+              required: false
+              schema: 
+                type: string
+                enum: ['whitesox', 'guardians', 'tigers', 'royals', 'twins' , 'cubs' , 'reds' , 'brewers' , 'pirates', 
+                        'cardinals', 'orioles', 'redsox', 'yankees', 'rays', 'bluejays', 'braves', 'marlins', 'mets', 
+                        'phillies', 'nationals', 'astros', 'angels', 'athletics', 'mariners', 'rangers', 'diamondbacks', 
+                        'rockies', 'dodgers', 'padres', 'giants']
+              description: >
+                Can be used to find the top prospects for a specific team. 
+                If no value is inputted, the top prospects across the MLB will be returned. 
+            - in: query
+              name: player_type
+              required: true
+              schema: 
+                type: string
+                enum: ['batters', 'pitchers']
+              description: >
+                Can be used to filter the top prospects by either pitcher or batter.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema: 
+                    type: array
+
                 
 components:
   schemas:
