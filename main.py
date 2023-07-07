@@ -66,7 +66,7 @@ async def get_batting_stats_individual():
     year = int(request.args.get("year"))
     fg_id = int(request.args.get("key_fangraphs"))
     
-    batting = batting_stats(year)
+    batting = batting_stats(year, qual=4)
     individual_batting = batting[batting['IDfg'] == fg_id]
     individual_batting = json.loads(individual_batting.to_json(orient='records'))
 
@@ -112,6 +112,19 @@ async def get_starting_pitching_stats():
     print(helper.num_tokens(filtered_pitching))
 
     return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
+
+@app.get("/pitching_stats_individual")
+async def get_pitching_stats_individual():
+    # Return the pitching statistics for an individual pitcher for the season specified
+    year = int(request.args.get("year"))
+    fg_id = int(request.args.get("key_fangraphs"))
+    pitching = starting_pitching_stats(year, qual=0)
+
+    individual_pitching = pitching[pitching['IDfg'] == fg_id]
+    individual_pitching = json.loads(individual_pitching.to_json(orient='records'))
+
+    return quart.Response(json.dumps(individual_pitching), content_type='application/json')
+
 
 @app.get("/team_batting")
 async def get_team_batting():
@@ -163,7 +176,7 @@ async def get_team_pitching():
     team_abr = request.args.get('team_abbreviation')
     year = int(request.args.get("year"))
     team_pitching_stats = team_pitching_bref(team_abr,year)
-    team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='table'))
+    team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='records'))
     # team_pitching_stats = team_pitching_stats.to_markdown()
     print(helper.num_tokens(team_pitching_stats))
 
@@ -174,16 +187,14 @@ async def get_playerid_lookup():
     # Retrieves the player id based on a players name that is given
     first_name = request.args.get("first")
     last_name = request.args.get("last")
-    playerid = playerid_lookup(last_name, first_name)
+    playerid = playerid_lookup(last_name, first_name, fuzzy=True)
 
     #If multiple players have the same name or multiple results are returned for the function 
     if len(playerid.index) > 1:
-        heading = 'Multiple MLB players found with the same name\n\n'
-        body = playerid[['name_last', 'name_first', 'key_mlbam', 'mlb_played_first', 'mlb_played_last']]
-        body = body.to_markdown()
-        return quart.Response(response=heading+body, status=500, content_type='text/markdown')
-        # There is some testing that should be done with this function once we get developer access
-        # We want another prompt that can handle a specific ID value being passed after the error is returned
+        heading = 'Multiple MLB players found'
+        playerid = playerid.to_markdown()
+        return quart.Response(response=heading+playerid, status=200, content_type='text/markdown')
+        
     
     #Test with the model to see if it can retrieve the key_mlbam from the output and adjust the YAML file accordingly
     playerid = json.loads(playerid.to_json(orient='table'))

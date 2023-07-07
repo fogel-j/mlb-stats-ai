@@ -144,6 +144,34 @@ paths:
                   schema:
                     type: object
     
+    /pitching_stats_individual:
+      get:
+          operationId: getPitchingStatsIndividual
+          summary: Retrieves the pitching stats for an individual player for a given season
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema: 
+                type: integer
+              description: Used to select which season the pitching statisitics will be retrieved from
+            - in: query
+              name: key_fangraphs
+              required: true
+              schema: 
+                type: integer
+              description: >
+                The fangraphs player identifier. This value can be retrieved by invoking 
+                the operation with operationId 'getPlayerIdLookup'.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: array
+
+
     /team_batting:
       get:
           operationId: getTeamBatting
