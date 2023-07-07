@@ -135,14 +135,41 @@ paths:
                 type: string
                 enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
                       'WHIP', 'BABIP', 'LOB%', 'FIP']
-              description: Used to filter pitching statistics based on the statistics inputted. 
+              description: Used to filter pitching statistics based on the statistic inputted. 
           responses:
             "200":
               description: OK
               content:
                 application/json:
                   schema:
-                    type: object
+                    type: array
+    
+    /relief_pitching_stats:
+      get:
+          operationId: getReliefPitchingStats
+          summary: Retrieves a specific pitching statistic for all relief pitchers from Fangraphs for the season being inputted.
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema: 
+                type: integer
+              description: Used to select which season the pitching statistics will be retrieved from.
+            - in: query
+              name: pitching_stat
+              required: true
+              schema: 
+                type: string
+                enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
+                      'WHIP', 'BABIP', 'LOB%', 'FIP']
+                description: Used to filter pitching statistics based on the statistic inputted.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema: 
+                    type: array
     
     /pitching_stats_individual:
       get:

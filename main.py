@@ -15,7 +15,8 @@ from helpers import helper
 from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
-statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats
+statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
+relief_pitching_stats
 
 import pandas as pd
 
@@ -30,8 +31,8 @@ PLUGIN_HOSTNAME = "localhost:5003"
 async def get_standings():
     # Return the overall MLB standings
     overall_standings = []
-    year = request.args.get("year")
-    standing = standings(int(year))
+    year = int(request.args.get("year"))
+    standing = standings(year)
     for i in standing:
         overall_standings.append(json.loads(i.to_json(orient='table')))
     print(helper.num_tokens(str(overall_standings)))
@@ -105,13 +106,32 @@ async def get_starting_pitching_stats():
         return quart.Response("The starting date is before data started being collected in 2008.", status=500)
     
     pitching = starting_pitching_stats(year)
-    filtered_pitching = pitching[['Name', pitching_stat]]
+    filtered_pitching = pitching[['Name', 'Team', pitching_stat]]
     filtered_pitching = filtered_pitching.sort_values(by=[pitching_stat])
     
     filtered_pitching = json.loads(filtered_pitching.to_json(orient='records'))
     print(helper.num_tokens(filtered_pitching))
 
     return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
+
+@app.get("/relief_pitching_stats")
+async def get_relief_pitching_stats():
+    # Return a specific pitching statistic at a season level for all starting pitcher players from Fangraphs
+    
+    year = int(request.args.get("year"))
+    pitching_stat = request.args.get("pitching_stat")
+    if year < 2008:
+        return quart.Response("The starting date is before data started being collected in 2008.", status=500)
+    
+    pitching = relief_pitching_stats(year)
+    filtered_pitching = pitching[['Name','Team', pitching_stat]]
+    filtered_pitching = filtered_pitching.sort_values(by=[pitching_stat])
+    
+    filtered_pitching = json.loads(filtered_pitching.to_json(orient='records'))
+    print(helper.num_tokens(filtered_pitching))
+
+    return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
+
 
 @app.get("/pitching_stats_individual")
 async def get_pitching_stats_individual():
