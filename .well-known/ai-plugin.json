@@ -1,7 +1,7 @@
 {
     "schema_version": "v1",
     "name_for_human": "MLB Stats (no auth)",
-    "name_for_model": "Major_League_Baseball_MLB_Statistics_Plugin",
+    "name_for_model": "Major_League_Baseball_Statistics_Plugin",
     "description_for_human": "Plugin for retrieving up to date baseball statistics.",
     "description_for_model": "Plugin for retrieving up to date baseball statistics.",
     "auth": {
@@ -13,6 +13,6 @@
     },
     "logo_url": "http://localhost:5003/logo.png",
     "contact_email": "joe.fogelman9@gmail.com",
-    "legal_info_url": "http://example.com/legal"
+    "legal_info_url": "https://github.com/fogel-j/baseball-stats-ai"
   }
   

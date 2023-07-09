@@ -16,7 +16,7 @@ from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
-relief_pitching_stats
+relief_pitching_stats, cache
 
 import pandas as pd
 
@@ -26,6 +26,7 @@ app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.c
 
 PLUGIN_HOSTNAME = "localhost:5003"
 
+cache.enable()
 
 @app.get("/standings")
 async def get_standings():

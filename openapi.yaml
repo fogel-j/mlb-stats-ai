@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-    title: Baseball Stats
+    title: MLB Stats
     description: Get current and historical statistics for MLB players, teams, games, and seasons.
     version: "v1"
 servers:
@@ -29,7 +29,7 @@ paths:
     /news:
         get:
             operationId: getNews
-            summary: Retrieves up to date news articles for teams from mlb.com. 
+            summary: Retrieves up to date news articles for teams from mlb.com
             parameters:
               - in: query
                 name: team_name
