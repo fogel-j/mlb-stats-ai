@@ -1,6 +1,6 @@
 from scrapy.crawler import CrawlerProcess
-from mlb_crawler.mlb_crawler.spiders.news import MlbSpider
 from scrapy.utils.project import get_project_settings
+from mlb_crawler.spiders.news import MlbSpider
 
 process = CrawlerProcess(get_project_settings())
 process.crawl(MlbSpider)
