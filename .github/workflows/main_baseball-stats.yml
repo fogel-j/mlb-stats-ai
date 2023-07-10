@@ -61,4 +61,3 @@ jobs:
           app-name: 'baseball-stats'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_25FFBF2E0D8741D5A5D112D1EC3D27E0 }}
-          startup-command: 'hypercorn ./main.py'
