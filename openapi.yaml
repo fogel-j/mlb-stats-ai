@@ -315,6 +315,38 @@ paths:
                 schema: 
                   type: object
 
+    /team_pitching_combined:
+        get:
+            operationId: getTeamPitchingCombined
+            summary: >
+              Retrieves the combined pitching statistics for all teams across the MLB from Fangraphs for the specified season.
+              This function should be used whenever a prompt is asking for combined pitching statistics for a team. 
+            parameters:
+              - in: query
+                name: year
+                required: true
+                schema: 
+                  type: integer
+                description: The year from which the pitching statistics should be retrieved from
+              - in: query
+                name: team_abbreviation
+                required: false
+                schema:
+                  type: string
+                description: >
+                  The 3 letter abbreviated name of the baseball team. This parameter should be passed 
+                  to get the combined statistics for a specific team. 
+                example: NYY
+            responses:
+              "200":
+                description: OK
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        type: object
+
     /playerid_lookup:
         get:
             operationId: getPlayerIdLookup
@@ -672,6 +704,18 @@ components:
         3B:
           type: integer
           description: The combined number of triples for the team
+        HR:
+          type: integer
+          description: The combined number of home runs for the team
+        R: 
+          type: integer
+          description: The combined number of runs for the team
+        RBI:
+          type: integer
+          description: The combined number of runs batted in for the team
+        BB:
+          type: integer
+          description: The combined number of base on balls - also known as walks - for the team
         AVG:
           type: number
           description: The team's combined batting average

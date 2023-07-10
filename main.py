@@ -16,7 +16,7 @@ from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
-relief_pitching_stats, cache
+relief_pitching_stats, cache, team_pitching
 
 import pandas as pd
 
@@ -201,6 +201,28 @@ async def get_team_pitching():
     print(helper.num_tokens(team_pitching_stats))
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
+
+@app.get("/team_pitching_combined")
+async def get_team_pitching_combined():
+    # Return the combined pitching statistics for a team from Fangraphs
+    year = int(request.args.get("year"))
+    team_abr = request.args.get("team_abbreviation")
+    team_pitching_stats = team_pitching(year)
+    if team_abr != None:
+        team_pitching_stats = team_pitching_stats[team_pitching_stats['Team'] == team_abr]
+    
+    else:
+        # Moving team abbreviation to the first column for easier model interpretation
+        cols = team_pitching_stats.columns.to_list()
+        cols = [cols[2]] + cols[:2] + cols[3:]
+        team_pitching_stats = team_pitching_stats[cols]
+        team_pitching_stats = team_pitching_stats.iloc[:, :40] # consider adding more columns
+        
+    team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='records'))
+    print(helper.num_tokens(team_pitching_stats))
+
+    return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
+
 
 @app.get("/playerid_lookup")
 async def get_playerid_lookup():
