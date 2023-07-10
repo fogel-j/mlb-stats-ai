@@ -22,8 +22,9 @@ import pandas as pd
 
 
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
-app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
+# app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
+app = quart.Quart(__name__)
 
 cache.enable()
 
@@ -355,4 +356,4 @@ async def page_not_found(e):
     return "Page Not Found" , 404
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5003)
+    app.run()
