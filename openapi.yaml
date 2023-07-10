@@ -162,7 +162,7 @@ paths:
                 type: string
                 enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
                       'WHIP', 'BABIP', 'LOB%', 'FIP']
-                description: Used to filter pitching statistics based on the statistic inputted.
+              description: Used to filter pitching statistics based on the statistic inputted.
           responses:
             "200":
               description: OK
@@ -202,7 +202,9 @@ paths:
     /team_batting:
       get:
           operationId: getTeamBatting
-          summary: Retrieves the batting statistics from Baseball Reference for each player on the team for the provided season
+          summary: >
+            Retrieves the batting statistics from Baseball Reference for each player on the team for the provided season.
+            This function should be used when you want to retrieve each individual player's batting statistics for a team. 
           parameters:
             - in: query
               name: team_abbreviation
@@ -219,11 +221,13 @@ paths:
               description: Used to select which season the team batting statistics will be retrieved from.
           responses:
             "200":
-              description: OK
+              description: A list of player statistics for the queried team
               content:
                 application/json:
                   schema: 
                     type: array
+                    items:
+                      $ref: '#/components/schemas/getTeamBattingResponse'
     
     /team_batting_combined:
         get:
@@ -378,6 +382,7 @@ paths:
               description: The two letter position abbreviation
               schema:
                 type: string
+                enum: ['1B', '2B', 'SS', '3B', 'LF', 'CF', 'RF']
               example: SS
             - in: query
               name: year
@@ -398,7 +403,7 @@ paths:
     /statcast_pitcher:
         get: 
           operationId: getStatcastPitcher
-          summary: Retrieves pitch-level statistics for a pitcher for a specified date.
+          summary: Retrieves pitch-level statistics from Statcast for a pitcher for a specified date.
           parameters:
               - in: query
                 name: start_date
@@ -514,7 +519,7 @@ components:
           description: The number of runs batted in
         BB:
           type: integer
-          description: The number of base on balls - also know was walks
+          description: The number of base on balls - also know as walks
         IBB:
           type: integer
           description: The number of times the player has been intentionally walked
@@ -528,8 +533,10 @@ components:
           description: The number of sacrifice flys
         SH:
           type: integer
+          description: The number of sacrifice hits
         GDP:
           type: integer
+          description: The number of ground ball double plays the hitter has hit into
         SB:
           type: integer
           description: The number of stolen bases
@@ -540,6 +547,96 @@ components:
           type: number
           description: The player's batting average
     
+    getTeamBattingResponse: 
+      type: object
+      properties:
+        Pos:
+          type: string
+          description: The position abbreviation that the player plays
+        Name:
+          type: string
+          description: The name of the player
+        Year:
+          type: number
+          description: The year that is being queried
+        Age:
+          type: number
+          description: The age of the player
+        G:
+          type: number
+          description: The number of games the player has played in
+        PA:
+          type: number
+          description: The number of plate appearances 
+        AB:
+          type: number
+          description: The number of at-bats by the player
+        R:
+          type: number
+          description: The player's number of runs for the season
+        H:
+          type: number
+          description: The player's number of hits
+        2B:
+          type: number
+          description: The player's number of doubles
+        3B:
+          type: number
+          description: The player's number of triples
+        HR:
+          type: number
+          description: The player's number of home runs
+        RBI:
+          type: number
+          description: The number of runs batted in
+        SB:
+          type: number
+          description: The number of stolen bases
+        CS:
+          type: number
+          description: The number of times the player was caught stealing
+        BB:
+          type: number
+          description: The number of walks
+        SO:
+          type: number
+          description: 
+        AVG:
+          type: number
+          description: The players batting average
+        OBP:
+          type: number
+          description: 
+        SLG:
+          type: number
+          description: 
+        OPS:
+          type: number
+          description: 
+        OPS+:
+          type: number
+          description: 
+        TB:
+          type: number
+          description: 
+        GDP:
+          type: number
+          description: 
+        HBP:
+          type: number
+          description: 
+        SH:
+          type: number
+          description: 
+        SF:
+          type: number
+          description: 
+        IBB:
+          type: number
+          description: 
+
+
+
     getTeamBattingCombinedResponse:
       type: object
       properties:

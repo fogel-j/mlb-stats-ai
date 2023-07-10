@@ -24,7 +24,6 @@ import pandas as pd
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
-PLUGIN_HOSTNAME = "localhost:5003"
 
 cache.enable()
 
