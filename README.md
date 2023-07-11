@@ -1,4 +1,4 @@
-6![logo.png](demo/logo.png)
+![logo.png](demo/logo.png)
 
 # MLB Stats ChatGPT Plugin
 
@@ -18,7 +18,19 @@ Currently, you must be a [ChatGPT Plus](https://openai.com/blog/chatgpt-plus) us
 
 If you are a ChatGPT Plus user:
 
-[Insert how to install the plugin]
+1. Sign in at https://chat.openai.com/
+
+2. Enable and install the plugin
+
+    a. Follow one of these guides if you need help
+    
+    https://techwiser.com/how-to-enable-and-install-chatgpt-plugins/
+    
+    https://devopscube.com/chatgpt-plugins/
+
+3. You can use the search bar to find "MLB Stats"
+
+![mlb_stats_storefront.png](demo/mlb_stats_storefront.png)
 
 ## Usage
 
