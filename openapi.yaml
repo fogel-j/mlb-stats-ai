@@ -4,7 +4,7 @@ info:
     description: Get current and historical statistics for MLB players, teams, games, and seasons.
     version: "v1"
 servers:
-    - url: http://localhost:5003
+    - url: https://baseball-stats.azurewebsites.net/
 paths:
     /standings:
         get:

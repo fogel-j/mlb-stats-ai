@@ -1,6 +1,4 @@
 import json
-import requests
-import urllib.parse
 import os
 from datetime import datetime
 import itertools
@@ -45,7 +43,10 @@ async def get_news():
     # Return relevant news articles for the team being asked about
     team_name = request.args.get("team_name")
 
-    directory_path = 'C:/Users/joefo/dev/baseball-stats-ai/scraped_data' # Change upon deployment to hosting service
+    if not team_name.isalnum():
+        return quart.abort(400, "Invalid team_name parameter. It must be a string consisting only of alphanumeric characters.")
+
+    directory_path = os.getcwd() + '/scraped_data' 
     all_files = os.listdir(directory_path)
     news_files = [f for f in all_files if f.startswith('mlb_news')]
 
