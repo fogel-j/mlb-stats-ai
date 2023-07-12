@@ -34,7 +34,7 @@ async def get_standings():
     standing = standings(year)
     for i in standing:
         overall_standings.append(json.loads(i.to_json(orient='table')))
-    print(helper.num_tokens(str(overall_standings)))
+    
 
     return quart.Response(json.dumps(overall_standings), status=200, content_type='application/json')
 
@@ -60,7 +60,7 @@ async def get_news():
             team_articles = list(itertools.islice((article for article in data if article['team'] == team_name), 7))
             articles.extend(team_articles)
 
-    print(helper.num_tokens(articles))
+    
     return quart.Response(json.dumps(articles, ensure_ascii=False), content_type='application/json', status=200)
 
 @app.get("/batting_stats_individual")
@@ -73,7 +73,7 @@ async def get_batting_stats_individual():
     individual_batting = batting[batting['IDfg'] == fg_id]
     individual_batting = json.loads(individual_batting.to_json(orient='records'))
 
-    print(helper.num_tokens(individual_batting))
+    
 
     return quart.Response(json.dumps(individual_batting), content_type='application/json')
 
@@ -94,7 +94,7 @@ async def get_batting_stats():
     filtered_batting = filtered_batting.sort_values(by=[bat_stat], ascending=False)
     # table = table.to_markdown()
     filtered_batting = json.loads(filtered_batting.to_json(orient='records'))
-    print(helper.num_tokens(filtered_batting))
+    
 
     return quart.Response(json.dumps(filtered_batting),content_type='application/json')
 
@@ -112,7 +112,7 @@ async def get_starting_pitching_stats():
     filtered_pitching = filtered_pitching.sort_values(by=[pitching_stat])
     
     filtered_pitching = json.loads(filtered_pitching.to_json(orient='records'))
-    print(helper.num_tokens(filtered_pitching))
+    
 
     return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
 
@@ -130,7 +130,7 @@ async def get_relief_pitching_stats():
     filtered_pitching = filtered_pitching.sort_values(by=[pitching_stat])
     
     filtered_pitching = json.loads(filtered_pitching.to_json(orient='records'))
-    print(helper.num_tokens(filtered_pitching))
+    
 
     return quart.Response(json.dumps(filtered_pitching), content_type='application/json')
 
@@ -155,7 +155,7 @@ async def get_team_batting():
     year = int(request.args.get("year"))
     team_batting_stats = team_batting_bref(team_abr,year)
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
-    print(helper.num_tokens(team_batting_stats))
+    
 
     return quart.Response(json.dumps(team_batting_stats), content_type='application/json')
 
@@ -177,7 +177,7 @@ async def get_team_batting_combined():
         team_batting_stats = team_batting_stats.iloc[:, :40] # consider adding more columns
         
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
-    print(helper.num_tokens(team_batting_stats))
+    
 
     return quart.Response(json.dumps(team_batting_stats), content_type='application/json')
 
@@ -188,7 +188,7 @@ async def get_team_fielding():
     year = int(request.args.get("year"))
     team_fielding_stats = team_fielding_bref(team_abr,year)
     team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='table'))
-    print(helper.num_tokens(team_fielding_stats))
+    
 
     return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
 
@@ -200,7 +200,7 @@ async def get_team_pitching():
     team_pitching_stats = team_pitching_bref(team_abr,year)
     team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='records'))
     # team_pitching_stats = team_pitching_stats.to_markdown()
-    print(helper.num_tokens(team_pitching_stats))
+    
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
 
@@ -221,7 +221,7 @@ async def get_team_pitching_combined():
         team_pitching_stats = team_pitching_stats.iloc[:, :40] # consider adding more columns
         
     team_pitching_stats = json.loads(team_pitching_stats.to_json(orient='records'))
-    print(helper.num_tokens(team_pitching_stats))
+    
 
     return quart.Response(json.dumps(team_pitching_stats), content_type='application/json')
 
@@ -265,7 +265,7 @@ async def get_statcast_batter():
     batter_stats = batter_stats.iloc[:, :26]
 
     batter_stats = json.loads(batter_stats.to_json(orient='records'))
-    print(helper.num_tokens(str(batter_stats)))
+    
 
     return quart.Response(json.dumps(batter_stats), content_type='application/json')
 
@@ -306,7 +306,7 @@ async def get_statcast_pitcher():
 
     pitching = statcast_pitcher(start_dt=starting_date,player_id=mlbam_player_id)
     pitching = json.loads(pitching.to_json(orient='records'))
-    print(helper.num_tokens(pitching))
+    
 
 
     return quart.Response(json.dumps(pitching), content_type='application/json')
@@ -322,7 +322,7 @@ async def get_top_prospects():
     prospects = prospects.head(50)
 
     prospects = json.loads(prospects.to_json(orient='records'))
-    print(helper.num_tokens(prospects))
+    
 
     return quart.Response(json.dumps(prospects), content_type='application/json')
 
@@ -351,6 +351,10 @@ async def openapi_spec():
         # This is a trick we do to populate the PLUGIN_HOSTNAME constant in the OpenAPI spec
         text = text.replace("PLUGIN_HOSTNAME", f"https://{host}")
         return quart.Response(text, mimetype="text/yaml")
+
+@app.get("/api/health")
+async def healthcheck():
+    return quart.Response("ALIVE", status=200)
 
 @app.errorhandler(404)
 async def page_not_found(e):
