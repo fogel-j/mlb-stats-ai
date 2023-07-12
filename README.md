@@ -30,7 +30,7 @@ If you are a ChatGPT Plus user:
 
 3. You can use the search bar to find "MLB Stats"
 
-![mlb_stats_storefront.png](demo/mlb_stats_storefront.png)
+![mlb_stats_storefront.png](demo/mlb_stats_storefront.PNG)
 
 ## Usage
 
