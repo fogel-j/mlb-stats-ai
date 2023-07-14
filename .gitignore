@@ -131,3 +131,6 @@ dmypy.json
 
 # VS Code Settings
 .vscode/
+
+# Ignore manifest file changes to avoid plugin from being removed
+.well-known/
