@@ -14,15 +14,15 @@ from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
-relief_pitching_stats, cache, team_pitching
+relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs
 
 import pandas as pd
 
 
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
-# app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
+app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
-app = quart.Quart(__name__)
+# app = quart.Quart(__name__)
 
 cache.enable()
 
@@ -165,8 +165,12 @@ async def get_team_batting_combined():
     # Returns the combined batting statistics for each team across the MLB for the season being specified
     year = int(request.args.get("year"))
     team_abr = request.args.get('team_abbreviation')
+    batting_stat = request.args.get('batting_stat')
+
     team_batting_stats = team_batting(year)
-    if team_abr != None:
+
+
+    if team_abr != None: # Get's a bunch of combined batting stats for one specific team
         team_batting_stats = team_batting_stats[team_batting_stats['Team'] == team_abr]
     
     else:
@@ -175,6 +179,10 @@ async def get_team_batting_combined():
         cols = [cols[2]] + cols[:2] + cols[3:]
         team_batting_stats = team_batting_stats[cols]
         team_batting_stats = team_batting_stats.iloc[:, :40] # consider adding more columns
+
+    if batting_stat != None: # Filter a single stat 
+        team_batting_stats = team_batting_stats[['Team',batting_stat]]
+        team_batting_stats = team_batting_stats.sort_values(by=batting_stat, ascending=False)
         
     team_batting_stats = json.loads(team_batting_stats.to_json(orient='records'))
     
@@ -298,7 +306,7 @@ async def get_statcast_pitcher():
         pass
     else:
         date_format = "%Y-%m-%d"
-        date = datetime.strptime(starting_date, date_format)
+        date = datetime.strptime('', date_format)
         if date.year < 2008:
             return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
 
@@ -318,13 +326,47 @@ async def get_top_prospects():
     team_name = request.args.get('team_name')
     player_type = request.args.get('player_type')
     prospects = top_prospects(teamName=team_name,playerType=player_type)
-    # We must cut down to top 50 prospects due to rate limiting from OpenAI
+    # We must cut down to top 50 prospects due to token limit from OpenAI
     prospects = prospects.head(50)
 
     prospects = json.loads(prospects.to_json(orient='records'))
     
 
     return quart.Response(json.dumps(prospects), content_type='application/json')
+
+@app.get("/schedule_and_record")
+async def get_schedule_and_record():
+    # Retrieves the schedule and record of game-level results for a given month of a season
+    year = int(request.args.get('year'))
+    month = request.args.get('month')
+    team_abr = request.args.get('team_abbreviation')
+
+    team_record = schedule_and_record(year, team_abr)
+    team_record = team_record.iloc[:, :-1]
+    # Must filter the data based on the month due to token limits
+    team_record = team_record[team_record['Date'].str.contains(month)]
+    team_record = json.loads(team_record.to_json(orient='records'))
+
+
+    return quart.Response(json.dumps(team_record), content_type='application/json')
+
+@app.get("/team_game_logs")
+async def get_team_game_logs():
+    # Retrieves detailed batting or pitching statistics for a team over a month time period
+    year = int(request.args.get('year'))
+    month = request.args.get('month')
+    team_abr = request.args.get('team_abbreviation')
+    stat = request.args.get('stat')
+
+    game_logs = team_game_logs(year,team_abr,stat)
+    # Must filter the data based on the month due to token limits
+    game_logs = game_logs[game_logs['Date'].str.contains(month)]
+    
+    game_logs = json.loads(game_logs.to_json(orient='records'))
+
+
+    return quart.Response(json.dumps(game_logs), content_type='application/json')
+
 
 
 @app.get("/logo.png")
