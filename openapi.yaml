@@ -405,11 +405,11 @@ paths:
                   type: integer
             responses:
               "200":
-                description: A complex JSON object response
+                description: An array of all pitches the batter faced on the specified date. 
                 content:
                   application/json:
                     schema:
-                      type: object
+                      type: array
               "500":
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected. 
     
@@ -434,11 +434,11 @@ paths:
                 type: integer
           responses:
             "200":
-              description: A complext JSON object response 
+              description: A complex JSON object response 
               content:
                 application/json:
                   schema: 
-                    type: object
+                    type: array
             "500": 
               description: Error. Statcast data can't be retrieved for years before 2008. 
 
@@ -469,10 +469,30 @@ paths:
                 content:
                   application/json:
                     schema:
-                      type: object
+                      type: array
               "500":
                 description: Error. Starting date is before the year 2008. This is before statcast data starting being collected.  
     
+    /statcast_sprint_speed:
+        get:
+          operationId: getStatcastSprintSpeed
+          summary: Retrieves the sprint speed of the top 250 players across the MLB. 
+          parameters:
+            - in: query
+              name: year
+              required: true
+              description: The season from which data will be retrieved from
+              schema: 
+                type: integer
+          responses:
+            "200":
+              description: An array of players and their sprint speed measured in feet per second (ft/sec)
+              content:
+                application/json:
+                  schema: 
+                    type: array
+
+
     /top_prospects:
         get:
           operationId: getTopProspects

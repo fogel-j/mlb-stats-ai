@@ -14,7 +14,8 @@ from pybaseball import \
 standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fielding_bref, \
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
-relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs
+relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs, \
+statcast_sprint_speed
 
 import pandas as pd
 
@@ -319,6 +320,20 @@ async def get_statcast_pitcher():
 
     return quart.Response(json.dumps(pitching), content_type='application/json')
 
+@app.get("/statcast_sprint_speed")
+async def get_statcast_sprint_speed():
+    # Retrieves the sprint speed for the top 250 players across the MLB
+    year = request.args.get('year')
+
+    sprint = statcast_sprint_speed(year)
+
+    # We must filter the output because of OpenAI token limits
+    sprint = sprint[['last_name', 'first_name', 'team', 'sprint_speed']]
+    sprint = sprint.head(250)
+    sprint = json.loads(sprint.to_json(orient='records'))
+
+
+    return quart.Response(json.dumps(sprint), content_type='application/json')
 
 @app.get("/top_prospects")
 async def get_top_prospects():
