@@ -15,7 +15,7 @@ standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fiel
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
 relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs, \
-statcast_sprint_speed
+statcast_sprint_speed, statcast_pitcher_pitch_arsenal
 
 import pandas as pd
 
@@ -258,7 +258,7 @@ async def get_playerid_lookup():
 async def get_statcast_batter():
     #Retrieves detailed pitch-level statcast information about a player's batting performance over a given time period.  
     starting_date = request.args.get('date')
-    mlbam_player_id = request.args.get('key_mlbam')
+    mlbam_player_id = int(request.args.get('key_mlbam'))
 
     #Statcast data is only available from 2008 onward. An error is returned for queries before that.
     if starting_date == None:
@@ -300,25 +300,50 @@ async def get_statcast_fielding():
 async def get_statcast_pitcher():
     #Retrieves pitch-level statistics for a pitcher
     starting_date = request.args.get('date')
-    mlbam_player_id = request.args.get('key_mlbam')
+    mlbam_player_id = int(request.args.get('key_mlbam'))
 
     #Statcast data is only available from 2008 onward. An error is returned for queries before that. 
     if starting_date == None:
         pass
     else:
         date_format = "%Y-%m-%d"
-        date = datetime.strptime('', date_format)
+        date = datetime.strptime(starting_date, date_format)
         if date.year < 2008:
             return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
 
     # TODO - There are more statcast pitching stats that can be retrieved from pybaseball. 
-
     pitching = statcast_pitcher(start_dt=starting_date,player_id=mlbam_player_id)
     pitching = json.loads(pitching.to_json(orient='records'))
     
-
-
     return quart.Response(json.dumps(pitching), content_type='application/json')
+
+@app.get("/statcast_pitch_arsenal")
+async def get_statcast_pitch_arsenal():
+    # Retrieves the percentage of each pitch thrown by the pitcher being queried
+    year = int(request.args.get('year'))
+    mlbam_player_id = int(request.args.get('key_mlbam'))
+
+    if int(year) < 2008:
+        return quart.Response("The starting date is before statcast data started being collected in 2008.", status=500)
+    
+    pitch_arsenal = statcast_pitcher_pitch_arsenal(year=year,arsenal_type='n_')
+    player_pitch_arsenal = pitch_arsenal[pitch_arsenal['pitcher'] == mlbam_player_id]
+
+    # Rename the columns for easier interpretation
+    player_pitch_arsenal = player_pitch_arsenal.rename(columns={'n_ff': '4-seam fastball', 
+                                                            'n_si': 'sinker', 
+                                                            'n_fc': 'cutter', 
+                                                            'n_sl': 'slider', 
+                                                            'n_ch': 'changeup',
+                                                            'n_cu': 'curveball',
+                                                            'n_fs': 'splitter',
+                                                            'n_kn': 'knuckleball',
+                                                            'n_st': 'sweeper',
+                                                            'n_sv': 'slurve'})
+
+    player_pitch_arsenal = json.loads(player_pitch_arsenal.to_json(orient='records'))
+
+    return quart.Response(json.dumps(player_pitch_arsenal), content_type='application/json')
 
 @app.get("/statcast_sprint_speed")
 async def get_statcast_sprint_speed():

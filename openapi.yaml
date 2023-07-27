@@ -450,11 +450,12 @@ paths:
               - in: query
                 name: date
                 required: true
-                description: The date from which data will be retrieved. 
+                description: >
+                    The date from which data will be retrieved. This must be a date when the pitcher last pitched. 
                 schema:
                   type: string
                   format: date
-                  description: The date in the format of 'YYYY-MM-DD'.
+                  description: The date in the format of 'YYYY-MM-DD'.  
               - in: query
                 name: key_mlbam
                 required: true
@@ -491,6 +492,36 @@ paths:
                 application/json:
                   schema: 
                     type: array
+                    items: 
+                      $ref: '#/components/schemas/getStatcastSprintSpeedResponse'
+
+    /statcast_pitch_arsenal:
+        get:
+          operationId: getStatcastPitchArsenal
+          summary: Retrieves a pitcher's pitch distribution percentages out of 100
+          parameters:
+            - in: query
+              name: year
+              required: true 
+              description: The season from which data will be retrieved from 
+              schema: 
+                type: integer
+            - in: query
+              name: key_mlbam
+              required: true
+              description: >
+                The MLBAM player ID of the player you want to retrieve data for. This value can be retrieved by invoking 
+                the operation with operationId 'getPlayerIdLookup'.
+              schema: 
+                type: integer
+          responses:
+            "200": 
+              description: An array containing a JSON object of the pitcher's pitch distribution
+              content:
+                application/json:
+                  schema: 
+                    type: array
+
 
 
     /top_prospects:
@@ -854,6 +885,23 @@ components:
           type: number
           description: The combined total number of line drives
     
+    getStatcastSprintSpeedResponse:
+      type: object
+      properties:
+        last_name:
+          type: string
+          description: The player's last name
+        first_name:
+          type: string
+          description: The player's first name
+        team: 
+          type: string
+          description: The team abbreviation that the player plays for
+        sprint_speed: 
+          type: number
+          description: The sprint speed of the player measured in feet per second (ft/sec)
+
+
     getScheduleandRecordResponse:
       type: object
       properties:
