@@ -34,6 +34,11 @@ If you are a ChatGPT Plus user:
 
 ## Usage
 
+Ask ChatGPT how to use it!
+`What operations can be performed with the MLB Stats plugin?`
+
+![usage.png](demo/usage.PNG)
+
 `What player has the most home runs for the 2023 season?`
 
 ![Untitled](demo/Untitled.png)
