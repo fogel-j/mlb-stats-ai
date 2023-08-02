@@ -15,7 +15,7 @@ standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fiel
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
 relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs, \
-statcast_sprint_speed, statcast_pitcher_pitch_arsenal
+statcast_sprint_speed, statcast_pitcher_pitch_arsenal, player_game_logs
 
 import pandas as pd
 
@@ -47,7 +47,7 @@ async def get_news():
     if not team_name.isalnum():
         return quart.abort(400, "Invalid team_name parameter. It must be a string consisting only of alphanumeric characters.")
 
-    directory_path = os.getcwd() + '/scraped_data' 
+    directory_path = os.getcwd() + '/mlb_crawler/scraped_data/' 
     all_files = os.listdir(directory_path)
     news_files = [f for f in all_files if f.startswith('mlb_news')]
 
@@ -396,9 +396,9 @@ async def get_team_game_logs():
     year = int(request.args.get('year'))
     month = request.args.get('month')
     team_abr = request.args.get('team_abbreviation')
-    stat = request.args.get('stat')
+    log_type = request.args.get('log_type')
 
-    game_logs = team_game_logs(year,team_abr,stat)
+    game_logs = team_game_logs(year,team_abr,log_type)
     # Must filter the data based on the month due to token limits
     game_logs = game_logs[game_logs['Date'].str.contains(month)]
     
@@ -406,6 +406,24 @@ async def get_team_game_logs():
 
 
     return quart.Response(json.dumps(game_logs), content_type='application/json')
+
+@app.get("/player_game_logs")
+async def get_player_game_logs():
+    # Retrieves the individual game stats for each game the player played in for a given year
+    year = int(request.args.get('year'))
+    month = request.args.get('month')
+    player_id = request.args.get('key_bbref')
+    log_type = request.args.get('log_type')
+
+    player_logs = player_game_logs(year,player_id,log_type)
+    #Must filter the data based on the month due to token limits
+    player_logs = player_logs[player_logs['Date'].str.contains(month)]
+
+    player_logs = json.loads(player_logs.to_json(orient='records'))
+
+
+    return quart.Response(json.dumps(player_logs), content_type='application/json')
+
 
 
 

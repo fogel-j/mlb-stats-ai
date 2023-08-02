@@ -452,6 +452,7 @@ paths:
                 required: true
                 description: >
                     The date from which data will be retrieved. This must be a date when the pitcher last pitched. 
+                    To retrieve when the pitcher last pitched, use the operation with operationID 'getPlayerGameLogs' to get the dates of player's previous pitching performances.
                 schema:
                   type: string
                   format: date
@@ -611,7 +612,9 @@ paths:
               required: true
               schema: 
                 type: string
-              description: Used to select which month the game logs will be retrieved from
+                description: The 3 letter month abbreviation
+              description: Used to select which month the game logs will be retrieved from.
+              example: Jun
             - in: query
               name: team_abbreviation
               required: true
@@ -619,12 +622,12 @@ paths:
                 type: string
               description: The 3 letter abbreviated name of the baseball team
             - in: query
-              name: stat
+              name: log_type
               required: true
               schema: 
                 type: string
                 enum: ['batting', 'pitching']
-              description: Used to select which set of statistics to retrieve. This will influence what kind of response is generated as well. 
+              description: Used to retrieve either 'batting' or 'pitching' statistics for the player. 
           responses:
             "200":
               description: An array of either batting or pitching statistics for games
@@ -636,6 +639,45 @@ paths:
                       oneOf:
                         - $ref: '#/components/schemas/getTeamGameLogsBattingResponse'
                         - $ref: '#/components/schemas/getTeamGamesLogsPitchingResponse'
+    
+    /player_game_logs:
+        get:
+          operationId: getPlayerGameLogs
+          summary: Retrieves a month of game logs for an individual player
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema: 
+                type: integer
+              description: Used to select which season the results will be retrieved from
+            - in: query
+              name: month
+              required: true
+              schema: 
+                type: string
+              description: Used to select which month the game logs will be retrieved from
+            - in: query
+              name: key_bbref
+              required: true
+              schema: 
+                type: string
+              description: >
+                  The bbref player id of the player you want to retrieved data for. This value can be retrieved by invoking 
+                  the operation with operationId 'getPlayerIdLookup'.
+            - in: query
+              name: log_type
+              required: true
+              schema: 
+                type: string
+              description: Used to retrieve either 'batting', 'fielding', or 'pitching' statistics for the player.
+          responses:
+            "200":
+              description: An array of either batting, fielding or pitching statistics for game logs over a specified month
+              content:
+                application/json:
+                  schema: 
+                    type: array
 
                 
 components:
