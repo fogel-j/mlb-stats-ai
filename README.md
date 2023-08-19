@@ -18,15 +18,15 @@ Currently, you must be a [ChatGPT Plus](https://openai.com/blog/chatgpt-plus) us
 
 If you are a ChatGPT Plus user:
 
-1. Sign in at https://chat.openai.com/
+1. Sign in at [https://chat.openai.com/](https://chat.openai.com/)
 
 2. Enable and install the plugin
 
     a. Follow one of these guides if you need help
     
-    https://techwiser.com/how-to-enable-and-install-chatgpt-plugins/
+    [https://techwiser.com/how-to-enable-and-install-chatgpt-plugins/](https://techwiser.com/how-to-enable-and-install-chatgpt-plugins/)
     
-    https://devopscube.com/chatgpt-plugins/
+    [https://devopscube.com/chatgpt-plugins/](https://devopscube.com/chatgpt-plugins/)
 
 3. You can use the search bar to find "MLB Stats"
 
