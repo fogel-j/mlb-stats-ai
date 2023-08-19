@@ -1,4 +1,4 @@
-![logo.png](demo/logo.png)
+<img src="https://github.com/fogel-j/mlb-stats-ai/blob/main/logo.png" width="200" height="200" />
 
 # MLB Stats ChatGPT Plugin
 
