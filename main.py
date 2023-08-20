@@ -17,11 +17,14 @@ statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_
 relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs, \
 statcast_sprint_speed, statcast_pitcher_pitch_arsenal, player_game_logs
 
-import pandas as pd
+import logging
 
 
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
+
+logging.basicConfig(filename='server_errors.log', level=logging.ERROR)
+logger = logging.getLogger()
 
 # app = quart.Quart(__name__)
 
@@ -459,6 +462,12 @@ async def healthcheck():
 @app.errorhandler(404)
 async def page_not_found(e):
     return "Page Not Found" , 404
+
+@app.errorhandler(500)
+async def internal_server_error(error):
+    logger.error(f"Error on URL: {request.url}")
+    logger.error(f"Internal Server Error: {error}")
+    return quart.Response("Internal Server Error"), 500
 
 if __name__ == "__main__":
     app.run()
