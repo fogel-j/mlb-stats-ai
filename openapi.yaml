@@ -257,7 +257,7 @@ paths:
                 schema: 
                   type: string
                   enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'AVG', 
-                      'OBP', 'SLG', 'OPS']
+                        'OBP', 'SLG', 'OPS']
                 description: >
                   Can be used to filter based on a certain batting statistic. 
                   Calling the function without this parameter can be used to get an overall view of stats returned from the function. 
@@ -584,6 +584,8 @@ paths:
               required: true
               schema: 
                 type: string
+                enum: ['BAL','TBR','TOR','BOS','NYY','ATL','PHI','MIA','WSN','NYM','MIN','CLE','DET','CHW','KCR','MIL','CHC','CIN','PIT',
+                      'STL','SEA','TEX','HOU','LAA','OAK','LAD','ARI','SFG','SDP','COL']
               description: The 3 letter abbreviated name of the baseball team.
           responses:
             "200":
@@ -620,6 +622,8 @@ paths:
               required: true
               schema: 
                 type: string
+                enum: ['BAL','TBR','TOR','BOS','NYY','ATL','PHI','MIA','WSN','NYM','MIN','CLE','DET','CHW','KCR','MIL','CHC',
+                      'CIN','PIT','STL','SEA','TEX','HOU','LAA','OAK','LAD','ARI','SFG','SDP','COL']
               description: The 3 letter abbreviated name of the baseball team
             - in: query
               name: log_type
