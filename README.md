@@ -1,4 +1,4 @@
-[demo/logo.png](logo.png)
+![logo.png](demo/logo.png)
 
 # MLB Stats ChatGPT Plugin
 
