@@ -615,6 +615,7 @@ paths:
               schema: 
                 type: string
                 description: The 3 letter month abbreviation
+                enum: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
               description: Used to select which month the game logs will be retrieved from.
               example: Jun
             - in: query
@@ -660,6 +661,7 @@ paths:
               required: true
               schema: 
                 type: string
+                enum: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
               description: Used to select which month the game logs will be retrieved from
             - in: query
               name: key_bbref
@@ -965,7 +967,7 @@ components:
             If the output is '@' the team was playing away
         Opp:
           type: string
-          description: The opponent team
+          description: The opponent team's 3 letter abbreviation
         W/L:
           type: string
           description: Whether the team won or lost the game
