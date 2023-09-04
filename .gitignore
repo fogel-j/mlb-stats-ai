@@ -134,3 +134,6 @@ dmypy.json
 
 # Ignore manifest file changes to avoid plugin from being removed
 .well-known/
+
+#Jupyter testing file
+testing.ipynb
