@@ -685,6 +685,41 @@ paths:
                   schema: 
                     type: array
 
+    /player_split_stats:
+        get:
+          operationId: getPlayerSplitStats
+          summary: Retrieves a player's split stats for a given season
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema:
+                type: integer
+              description: Used to select which season the results will be retrieved from
+            - in: query
+              name: key_bbref
+              required: true
+              schema: 
+                type: string
+              description: >
+                The bbref player id of the player you want to retrieved data for. This value can be retrieved by invoking 
+                the operation with operationId 'getPlayerIdLookup'.
+            - in: query
+              name: split_type
+              required: true
+              schema: 
+                type: string
+                enum: ['Season_Totals', 'Platoon_Splits', 'Home_or_Away', 'First_or_Second_Half', 'Months',
+                        'Batting_Order_Positions', 'Number_of_Outs_in_Inning', 'Clutch_Stats', 'By_Inning','Hit_Location','Opponent',
+                        'Game_Conditions', 'Ballparks']
+          responses:
+            "200":
+              description: An array of player split statistics depending on the 'split_type' parameter inserted
+              content:
+                application/json:
+                  schema: 
+                    type: array
+
                 
 components:
   schemas:

@@ -15,7 +15,7 @@ standings, batting_stats_bref, pitching_stats_bref, team_batting_bref, team_fiel
 team_pitching_bref, playerid_lookup, statcast_batter, statcast_outs_above_average, \
 statcast_pitcher, top_prospects, batting_stats, team_batting, starting_pitching_stats, \
 relief_pitching_stats, cache, team_pitching, schedule_and_record, team_game_logs, \
-statcast_sprint_speed, statcast_pitcher_pitch_arsenal, player_game_logs
+statcast_sprint_speed, statcast_pitcher_pitch_arsenal, player_game_logs, get_splits
 
 import logging
 
@@ -23,7 +23,7 @@ import logging
 # Note: Setting CORS to allow chat.openapi.com is only required when running a localhost plugin
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
-logging.basicConfig(filename='/home/LogFiles/server_errors.log', level=logging.ERROR)
+# logging.basicConfig(filename='/home/LogFiles/server_errors.log', level=logging.ERROR)
 logger = logging.getLogger()
 
 # app = quart.Quart(__name__)
@@ -427,6 +427,27 @@ async def get_player_game_logs():
 
     return quart.Response(json.dumps(player_logs), content_type='application/json')
 
+
+@app.get("/player_split_stats")
+async def get_player_split_stats():
+    # Retrieves a player's split stats over a given season
+    year = int(request.args.get('year'))
+    player_id = request.args.get('key_bbref')
+    split_type = request.args.get('split_type')
+    split_type = split_type.replace('_',' ')
+
+    split_data = get_splits(playerid=player_id,year=year,player_info=True)
+
+    if split_data[1]['Position'].strip() == 'Pitcher':
+        split_data = get_splits(playerid=player_id,year=year,pitching_splits=True)
+        
+    split_data = split_data[0]
+    split_data = split_data.loc[split_type]
+    split_data = split_data.reset_index()
+
+    split_data = json.loads(split_data.to_json(orient='records'))
+
+    return quart.Response(json.dumps(split_data), content_type='application/json')
 
 
 
