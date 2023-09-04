@@ -403,7 +403,10 @@ async def get_team_game_logs():
 
     game_logs = team_game_logs(year,team_abr,log_type)
     # Must filter the data based on the month due to token limits
-    game_logs = game_logs[game_logs['Date'].str.contains(month)]
+    try: 
+        game_logs = game_logs[game_logs['Date'].str.contains(month)]
+    except:
+        return quart.Response('No team games found for that month!', status=500)
     
     game_logs = json.loads(game_logs.to_json(orient='records'))
 
@@ -417,10 +420,12 @@ async def get_player_game_logs():
     month = request.args.get('month')
     player_id = request.args.get('key_bbref')
     log_type = request.args.get('log_type')
-
-    player_logs = player_game_logs(year,player_id,log_type)
-    #Must filter the data based on the month due to token limits
-    player_logs = player_logs[player_logs['Date'].str.contains(month)]
+    try:
+        player_logs = player_game_logs(year,player_id,log_type)
+        #Must filter the data based on the month due to token limits
+        player_logs = player_logs[player_logs['Date'].str.contains(month)]
+    except: 
+        return quart.Response(json.dumps({'error': "No player game logs found for those parameters. Please check you are using the proper 'log_type' and the player played a game during that month and year."}), status=500)
 
     player_logs = json.loads(player_logs.to_json(orient='records'))
 
