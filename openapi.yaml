@@ -4,7 +4,7 @@ info:
     description: Get current and historical statistics for MLB players, teams, games, and seasons.
     version: "v1"
 servers:
-    - url: https://baseball-stats.azurewebsites.net/
+    - url: http://localhost:8000/
 paths:
     /standings:
         get:
@@ -18,37 +18,7 @@ paths:
                   schema:
                     type: integer
                   description: Used to filter the year the overall standings should be returned for.
-            responses:
-                "200":
-                    description: Returns the overall league standings.
-                    content:
-                      application/json:
-                        schema: 
-                            type: array
-
-    /news:
-        get:
-            operationId: getNews
-            summary: Retrieves up to date news articles for teams from mlb.com
-            parameters:
-              - in: query
-                name: team_name
-                required: true
-                schema:
-                  type: string
-                  enum: ['whitesox', 'guardians', 'tigers', 'royals', 'twins' , 'cubs' , 'reds' , 'brewers' , 'pirates', 
-                        'cardinals', 'orioles', 'redsox', 'yankees', 'rays', 'bluejays', 'braves', 'marlins', 'mets', 
-                        'phillies', 'nationals', 'astros', 'angels', 'athletics', 'mariners', 'rangers', 'diamondbacks', 
-                        'rockies', 'dodgers', 'padres', 'giants']
-                description: Used to filter out relevant news articles for the team being specified.
-            responses:
-              "200":
-                description: OK
-                content:
-                  application/json:
-                    schemas:
-                      type: array
-    
+            
     /batting_stats_individual:
       get:
           operationId: getBattingStatsIndividual
@@ -68,16 +38,7 @@ paths:
               description: >
                   The fangraphs player identifier. This value can be retrieved by invoking 
                   the operation with operationId 'getPlayerIdLookup'.
-          responses:
-            "200":
-              description: OK
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/getBattingStatsIndividualResponse'
-
-
-
+          
     /batting_stats:
       get:
           operationId: getBattingStats
@@ -136,13 +97,7 @@ paths:
                 enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
                       'WHIP', 'BABIP', 'LOB%', 'FIP']
               description: Used to filter pitching statistics based on the statistic inputted. 
-          responses:
-            "200":
-              description: OK
-              content:
-                application/json:
-                  schema:
-                    type: array
+          
     
     /relief_pitching_stats:
       get:
@@ -163,13 +118,7 @@ paths:
                 enum: ['W', 'L', 'WAR', 'ERA', 'GS', 'IP', 'HR', 'BB' , 'SO', 'GB', 'FB', 'LD', 'K/9', 'BB/9', 'H/9', 'AVG',
                       'WHIP', 'BABIP', 'LOB%', 'FIP']
               description: Used to filter pitching statistics based on the statistic inputted.
-          responses:
-            "200":
-              description: OK
-              content:
-                application/json:
-                  schema: 
-                    type: array
+          
     
     /pitching_stats_individual:
       get:
@@ -190,13 +139,7 @@ paths:
               description: >
                 The fangraphs player identifier. This value can be retrieved by invoking 
                 the operation with operationId 'getPlayerIdLookup'.
-          responses:
-            "200":
-              description: OK
-              content:
-                application/json:
-                  schema:
-                    type: array
+          
 
 
     /team_batting:
@@ -219,21 +162,14 @@ paths:
               schema: 
                 type: integer
               description: Used to select which season the team batting statistics will be retrieved from.
-          responses:
-            "200":
-              description: A list of player statistics for the queried team
-              content:
-                application/json:
-                  schema: 
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/getTeamBattingResponse'
+          
     
     /team_batting_combined:
         get:
             operationId: getTeamBattingCombined
             summary: >
               Retrieves the combined batting statistics for all teams across the MLB from Fangraphs for the specified season.
+              It can also be used with the 'team_abbreviation' parameter to only get the combined batting statistics for a specific team.
               This function should be used whenever a prompt is asking for combined statistics. 
             parameters:
               - in: query
@@ -261,15 +197,7 @@ paths:
                 description: >
                   Can be used to filter based on a certain batting statistic. 
                   Calling the function without this parameter can be used to get an overall view of stats returned from the function. 
-            responses:
-              "200":
-                description: OK
-                content:
-                  application/json:
-                    schema:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/getTeamBattingCombinedResponse'
+            
 
 
 
@@ -291,18 +219,12 @@ paths:
               schema: 
                 type: integer
               description: Used to select which season the team fielding statistics will be retrieved from. 
-          responses: 
-            "200":
-              description: A complex JSON object response
-              content:
-                application/json:
-                  schema: 
-                    type: object
+          
 
     /team_pitching:
       get: 
         operationId: getTeamPitching
-        summary: Retrieves the pitching statistics from Baseball Reference for each player on the team for the provided season
+        summary: Retrieves the pitching statistics from Baseball Reference for each player on a specific team for the provided season
         parameters:
           - in: query
             name: team_abbreviation
@@ -317,19 +239,14 @@ paths:
             description: Used to select which season the team fielding statistics will be retrieved from
             schema: 
               type: integer
-        responses:
-          "200":
-            description: A complex JSON object response
-            content:
-              application/json:
-                schema: 
-                  type: object
+        
 
     /team_pitching_combined:
         get:
             operationId: getTeamPitchingCombined
             summary: >
               Retrieves the combined pitching statistics for all teams across the MLB from Fangraphs for the specified season.
+              It can also be used with the 'team_abbreviation' parameter to only get the combined pitching statistics for a specific team.
               This function should be used whenever a prompt is asking for combined pitching statistics for a team. 
             parameters:
               - in: query
@@ -347,15 +264,7 @@ paths:
                   The 3 letter abbreviated name of the baseball team. This parameter should be passed 
                   to get the combined statistics for a specific team. 
                 example: NYY
-            responses:
-              "200":
-                description: OK
-                content:
-                  application/json:
-                    schema:
-                      type: array
-                      items:
-                        type: object
+            
 
     /playerid_lookup:
         get:
@@ -403,15 +312,7 @@ paths:
                   the operation with operationId 'getPlayerIdLookup'.
                 schema: 
                   type: integer
-            responses:
-              "200":
-                description: An array of all pitches the batter faced on the specified date. 
-                content:
-                  application/json:
-                    schema:
-                      type: array
-              "500":
-                description: Error. Starting date is before the year 2008. This is before statcast data starting being collected. 
+          
     
     /statcast_fielding:
         get: 
@@ -432,15 +333,7 @@ paths:
               description: The year that fielding statistics should be retrieved from.
               schema: 
                 type: integer
-          responses:
-            "200":
-              description: A complex JSON object response 
-              content:
-                application/json:
-                  schema: 
-                    type: array
-            "500": 
-              description: Error. Statcast data can't be retrieved for years before 2008. 
+           
 
     /statcast_pitcher:
         get: 
@@ -465,15 +358,7 @@ paths:
                   the operation with operationId 'getPlayerIdLookup'.
                 schema: 
                   type: integer
-          responses:
-              "200":
-                description: A complex JSON object response
-                content:
-                  application/json:
-                    schema:
-                      type: array
-              "500":
-                description: Error. Starting date is before the year 2008. This is before statcast data starting being collected.  
+            
     
     /statcast_sprint_speed:
         get:
@@ -486,15 +371,7 @@ paths:
               description: The season from which data will be retrieved from
               schema: 
                 type: integer
-          responses:
-            "200":
-              description: An array of players and their sprint speed measured in feet per second (ft/sec)
-              content:
-                application/json:
-                  schema: 
-                    type: array
-                    items: 
-                      $ref: '#/components/schemas/getStatcastSprintSpeedResponse'
+          
 
     /statcast_pitch_arsenal:
         get:
@@ -515,13 +392,7 @@ paths:
                 the operation with operationId 'getPlayerIdLookup'.
               schema: 
                 type: integer
-          responses:
-            "200": 
-              description: An array containing a JSON object of the pitcher's pitch distribution
-              content:
-                application/json:
-                  schema: 
-                    type: array
+          
 
 
 
@@ -550,13 +421,7 @@ paths:
                 enum: ['batters', 'pitchers']
               description: >
                 Can be used to filter the top prospects by either pitcher or batter.
-          responses:
-            "200":
-              description: OK
-              content:
-                application/json:
-                  schema: 
-                    type: array
+          
 
     /schedule_and_record:
         get:
@@ -587,15 +452,7 @@ paths:
                 enum: ['BAL','TBR','TOR','BOS','NYY','ATL','PHI','MIA','WSN','NYM','MIN','CLE','DET','CHW','KCR','MIL','CHC','CIN','PIT',
                       'STL','SEA','TEX','HOU','LAA','OAK','LAD','ARI','SFG','SDP','COL']
               description: The 3 letter abbreviated name of the baseball team.
-          responses:
-            "200":
-              description: An array of high level game statistics
-              content:
-                application/json:
-                  schema: 
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/getScheduleandRecordResponse'
+          
 
 
     /team_game_logs:
@@ -633,17 +490,7 @@ paths:
                 type: string
                 enum: ['batting', 'pitching']
               description: Used to retrieve either 'batting' or 'pitching' statistics for the player. 
-          responses:
-            "200":
-              description: An array of either batting or pitching statistics for games
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: '#/components/schemas/getTeamGameLogsBattingResponse'
-                        - $ref: '#/components/schemas/getTeamGamesLogsPitchingResponse'
+          
     
     /player_game_logs:
         get:
@@ -677,13 +524,7 @@ paths:
               schema: 
                 type: string
               description: Used to retrieve either 'batting', 'fielding', or 'pitching' statistics for the player.
-          responses:
-            "200":
-              description: An array of either batting, fielding or pitching statistics for game logs over a specified month
-              content:
-                application/json:
-                  schema: 
-                    type: array
+          
 
     /player_split_stats:
         get:
@@ -712,483 +553,4 @@ paths:
                 enum: ['Season_Totals', 'Platoon_Splits', 'Home_or_Away', 'First_or_Second_Half', 'Months',
                         'Batting_Order_Positions', 'Number_of_Outs_in_Inning', 'Clutch_Stats', 'By_Inning','Hit_Location','Opponent',
                         'Game_Conditions', 'Ballparks']
-          responses:
-            "200":
-              description: An array of player split statistics depending on the 'split_type' parameter inserted
-              content:
-                application/json:
-                  schema: 
-                    type: array
-
-                
-components:
-  schemas:
-    getBattingStatsIndividualResponse:
-      type: object
-      properties:
-        index:
-          type: integer
-        IDfg:
-          type: integer
-          description: The player identifier.
-        Season:
-          type: integer
-          description: The year the data is retrieved for.
-        Name:
-          type: string
-          description: The player's name
-        Team:
-          type: string
-          description: The 3-letter abbreviation of the team the player plays for.
-        Age:
-          type: integer
-          description: How old the player is for the year being queried.
-        G:
-          type: integer
-          description: The number of games the player played in for the season.
-        AB:
-          type: integer
-          description: The number of at-bats
-        PA:
-          type: integer
-          description: The number of plate appearances
-        H:
-          type: integer
-          description: The number of hits
-        1B:
-          type: integer
-          description: The number of singles
-        2B:
-          type: integer
-          description: The number of doubles
-        3B:
-          type: integer
-          description: The number of triples
-        HR:
-          type: integer
-          description: The number of home runs
-        R:
-          type: integer
-          description: The number of runs
-        RBI:
-          type: integer
-          description: The number of runs batted in
-        BB:
-          type: integer
-          description: The number of base on balls - also know as walks
-        IBB:
-          type: integer
-          description: The number of times the player has been intentionally walked
-        SO:
-          type: integer
-          description: The number of strike outs
-        HBP:
-          type: integer
-        SF:
-          type: integer
-          description: The number of sacrifice flys
-        SH:
-          type: integer
-          description: The number of sacrifice hits
-        GDP:
-          type: integer
-          description: The number of ground ball double plays the hitter has hit into
-        SB:
-          type: integer
-          description: The number of stolen bases
-        CS:
-          type: integer
-          description: The number of times the player was caught stealing
-        AVG:
-          type: number
-          description: The player's batting average
-    
-    getTeamBattingResponse: 
-      type: object
-      properties:
-        Pos:
-          type: string
-          description: The position abbreviation that the player plays
-        Name:
-          type: string
-          description: The name of the player
-        Year:
-          type: number
-          description: The year that is being queried
-        Age:
-          type: number
-          description: The age of the player
-        G:
-          type: number
-          description: The number of games the player has played in
-        PA:
-          type: number
-          description: The number of plate appearances 
-        AB:
-          type: number
-          description: The number of at-bats by the player
-        R:
-          type: number
-          description: The player's number of runs for the season
-        H:
-          type: number
-          description: The player's number of hits
-        2B:
-          type: number
-          description: The player's number of doubles
-        3B:
-          type: number
-          description: The player's number of triples
-        HR:
-          type: number
-          description: The player's number of home runs
-        RBI:
-          type: number
-          description: The number of runs batted in
-        SB:
-          type: number
-          description: The number of stolen bases
-        CS:
-          type: number
-          description: The number of times the player was caught stealing
-        BB:
-          type: number
-          description: The number of walks
-        SO:
-          type: number
-          description: 
-        AVG:
-          type: number
-          description: The players batting average
-        OBP:
-          type: number
-          description: 
-        SLG:
-          type: number
-          description: 
-        OPS:
-          type: number
-          description: 
-        OPS+:
-          type: number
-          description: 
-        TB:
-          type: number
-          description: 
-        GDP:
-          type: number
-          description: 
-        HBP:
-          type: number
-          description: 
-        SH:
-          type: number
-          description: 
-        SF:
-          type: number
-          description: 
-        IBB:
-          type: number
-          description: 
-
-
-
-    getTeamBattingCombinedResponse:
-      type: object
-      properties:
-        Team:
-          type: string
-          description: >
-            The team's 3 letter abbreviation. All subsequent properties within the object 
-            are the team's combined batting statistics. 
-        teamIDfg:
-          type: integer
-        Season:
-          type: integer
-        Age:
-          type: integer
-          description: The average age of the team
-        G: 
-          type: integer
-        AB: 
-          type: integer
-          description: The combined total number of at-bats for the team
-        PA:
-          type: integer
-          description: The combined total number of plate appearances for the team
-        H:
-          type: integer
-          description: The combined total number of hits for the team
-        1B:
-          type: integer
-          description: The combined number of singles for the team
-        2B:
-          type: integer
-          description: The combined number of doubles for the team
-        3B:
-          type: integer
-          description: The combined number of triples for the team
-        HR:
-          type: integer
-          description: The combined number of home runs for the team
-        R: 
-          type: integer
-          description: The combined number of runs for the team
-        RBI:
-          type: integer
-          description: The combined number of runs batted in for the team
-        BB:
-          type: integer
-          description: The combined number of base on balls - also known as walks - for the team
-        IBB:
-          type: integer
-          description: The combined number of intentional walks for the team
-        SO:
-          type: integer
-          description: The combined number of strikeouts for the team
-        HBP:
-          type: integer
-          description: The combined number of times players have been hit by a pitch
-        SLG:
-          type: number
-          description: The team's slugging percentage
-        OPS:
-          type: number
-          description: The team's On-base plus slugging percentage
-        AVG:
-          type: number
-          description: The team's combined batting average
-        GB: 
-          type: number
-          description: The combined total number of ground balls
-        FB:
-          type: number
-          description: The combined total number of fly balls
-        LD: 
-          type: number
-          description: The combined total number of line drives
-    
-    getStatcastSprintSpeedResponse:
-      type: object
-      properties:
-        last_name:
-          type: string
-          description: The player's last name
-        first_name:
-          type: string
-          description: The player's first name
-        team: 
-          type: string
-          description: The team abbreviation that the player plays for
-        sprint_speed: 
-          type: number
-          description: The sprint speed of the player measured in feet per second (ft/sec)
-
-
-    getScheduleandRecordResponse:
-      type: object
-      properties:
-        Date:
-          type: string
-          description: The date the game was played on 
-        Tm:
-          type: string
-          description: The team being queried
-        Home_Away:
-          type: string
-          description: >
-            Whether the team was playing at their home stadium or away. 
-            If the output is 'Home' the team was playing at home. 
-            If the output is '@' the team was playing away
-        Opp:
-          type: string
-          description: The opponent team's 3 letter abbreviation
-        W/L:
-          type: string
-          description: Whether the team won or lost the game
-        R:
-          type: number
-          format: float
-          description: The number of runs the team scored 
-        RA:
-          type: number
-          format: float
-          description: The number of runs that were scored by the opposing team
-        Inn:
-          type: number
-          format: float
-        W-L:
-          type: string
-        Rank:
-          type: number
-          format: float
-        GB:
-          type: string
-          description: How many games behind the team is after the result of the game
-        Win:
-          type: string
-          description: The pitcher who is attributed with the win for the game
-        Loss:
-          type: string
-          description: The pitcher who is attributed with the loss for the game
-        Save:
-          type: string
-          description: The pitcher who is attributed with the save for the game
-        Time:
-          type: string
-        D/N:
-          type: string
-          description: Whether the game was a day or night game
-        Attendance:
-          type: number
-          format: float
-          nullable: true
-        cLI:
-          type: string
-        Streak:
-          type: number
-          format: float
-        
-    getTeamGameLogsBattingResponse:
-      type: object
-      properties: 
-        Game:
-          type: integer
-        Date:
-          type: string
-        Home:
-          type: boolean
-        Opp:
-          type: string
-        PA:
-          type: integer
-        AB:
-          type: integer
-        R:
-          type: integer
-        H:
-          type: integer
-        "2B":
-          type: integer
-        "3B":
-          type: integer
-        HR:
-          type: integer
-        RBI:
-          type: integer
-        BB:
-          type: integer
-        IBB:
-          type: integer
-        SO:
-          type: integer
-        HBP:
-          type: integer
-        SH:
-          type: integer
-        SF:
-          type: integer
-        ROE:
-          type: integer
-        GDP:
-          type: integer
-        SB:
-          type: integer
-        CS:
-          type: integer
-        BA:
-          type: number
-          format: float
-        OBP:
-          type: number
-          format: float
-        SLG:
-          type: number
-          format: float
-        OPS:
-          type: number
-          format: float
-        LOB:
-          type: integer
-        NumPlayers:
-          type: integer
-        Thr:
-          type: string
-        OppStart:
-          type: string
-        W/L:
-          type: string
-        Score:
-          type: string
-
-    getTeamGamesLogsPitchingResponse:
-      type: object
-      properties:
-        Game:
-          type: integer
-        Date:
-          type: string
-        Home:
-          type: boolean
-        Opp:
-          type: string
-        IP:
-          type: number
-        H:
-          type: integer
-        R:
-          type: integer
-        ER:
-          type: integer
-        UER:
-          type: integer
-        BB:
-          type: integer
-        SO:
-          type: integer
-        HR:
-          type: integer
-        HBP:
-          type: integer
-        ERA:
-          type: number
-        BF:
-          type: integer
-        Pit:
-          type: integer
-        Str:
-          type: integer
-        IR:
-          type: integer
-        IS:
-          type: integer
-        SB:
-          type: integer
-        CS:
-          type: integer
-        AB:
-          type: integer
-        2B:
-          type: integer
-        3B:
-          type: integer
-        IBB:
-          type: integer
-        SH:
-          type: integer
-        SF:
-          type: integer
-        ROE:
-          type: integer
-        GDP:
-          type: integer
-        NumPlayers:
-          type: integer
-        Umpire:
-          type: string
-        PitchersUsed:
-          type: string
-        W/L:
-          type: string
-        Score:
-          type: string
+         
