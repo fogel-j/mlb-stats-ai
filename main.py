@@ -75,6 +75,7 @@ async def get_batting_stats_individual():
     
     batting = batting_stats(year, qual=4)
     individual_batting = batting[batting['IDfg'] == fg_id]
+    individual_batting = batting.iloc[:, :47]
     individual_batting = json.loads(individual_batting.to_json(orient='records'))
 
     
@@ -199,7 +200,7 @@ async def get_team_fielding():
     team_abr = request.args.get('team_abbreviation')
     year = int(request.args.get("year"))
     team_fielding_stats = team_fielding_bref(team_abr,year)
-    team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='table'))
+    team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='records'))
     
 
     return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
@@ -370,7 +371,7 @@ async def get_top_prospects():
     player_type = request.args.get('player_type')
     prospects = top_prospects(teamName=team_name,playerType=player_type)
     # We must cut down to top 50 prospects due to token limit from OpenAI
-    prospects = prospects.head(50)
+    prospects = prospects.head(25)
 
     prospects = json.loads(prospects.to_json(orient='records'))
     
@@ -388,6 +389,7 @@ async def get_schedule_and_record():
     team_record = team_record.iloc[:, :-1]
     # Must filter the data based on the month due to token limits
     team_record = team_record[team_record['Date'].str.contains(month)]
+    team_record = team_record.drop(['Time','D/N','Attendance', 'Win', 'Loss','Save'],axis=1)
     team_record = json.loads(team_record.to_json(orient='records'))
 
 
@@ -407,6 +409,8 @@ async def get_team_game_logs():
         game_logs = game_logs[game_logs['Date'].str.contains(month)]
     except:
         return quart.Response('No team games found for that month!', status=500)
+
+    game_logs = game_logs.drop(['OppStart', 'Thr', 'BA', 'SLG','OPS','LOB','NumPlayers','ROE', 'IBB', 'SF', 'SH','RBI','Home','GDP','OBP','PA','AB'],axis=1)
     
     game_logs = json.loads(game_logs.to_json(orient='records'))
 
@@ -426,6 +430,9 @@ async def get_player_game_logs():
         player_logs = player_logs[player_logs['Date'].str.contains(month)]
     except: 
         return quart.Response(json.dumps({'error': "No player game logs found for those parameters. Please check you are using the proper 'log_type' and the player played a game during that month and year."}), status=500)
+    
+    player_logs = player_logs.iloc[:, :16]
+    player_logs = player_logs.drop(['Inngs'], axis=1)
 
     player_logs = json.loads(player_logs.to_json(orient='records'))
 

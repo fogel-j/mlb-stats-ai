@@ -4,7 +4,7 @@ info:
     description: Get current and historical statistics for MLB players, teams, games, and seasons.
     version: "v1"
 servers:
-    - url: http://localhost:8000/
+    - url: https://mlb-stats-chatbot-production.up.railway.app/
 paths:
     /standings:
         get:
@@ -42,7 +42,7 @@ paths:
     /batting_stats:
       get:
           operationId: getBattingStats
-          summary: Retrieves a batting statistic for all players from Fangraphs for the season being inputted
+          summary: Retrieves a batting statistic for all players across the MLB for the season being inputted
           parameters:
             - in: query
               name: year
@@ -58,30 +58,12 @@ paths:
                 enum: ['H', '2B', '3B', 'HR', 'RBI', 'BB', 'IBB', 'SO', 'HBP', 'SH', 'SF', 'GDP', 'SB', 'CS', 'AVG', 
                       'OBP', 'SLG', 'OPS']
               description: Used to filter batting statistics based on the statistic being specified.
-          responses:
-            "200":
-              description: >
-                Successful operation. The response is a sorted JSON object with the property "Name" 
-                and another property which is the value of the input "batting_stat". 
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: The player's name
-                        batting_stat: 
-                          type: number
-                          description: The value of the batting stat inserted as an input to the function.
 
 
     /starting_pitching_stats:
       get:
           operationId: getPitchingStatsFangraphs
-          summary: Retrieves a specific pitching statistic for all starting pitchers from Fangraphs for the season being inputted.
+          summary: Retrieves a specific pitching statistic for all starting pitchers across the MLB for the season being inputted.
           parameters:
             - in: query
               name: year
@@ -102,7 +84,7 @@ paths:
     /relief_pitching_stats:
       get:
           operationId: getReliefPitchingStats
-          summary: Retrieves a specific pitching statistic for all relief pitchers from Fangraphs for the season being inputted.
+          summary: Retrieves a specific pitching statistic for all relief pitchers across the MLB for the season being inputted.
           parameters:
             - in: query
               name: year
@@ -139,8 +121,6 @@ paths:
               description: >
                 The fangraphs player identifier. This value can be retrieved by invoking 
                 the operation with operationId 'getPlayerIdLookup'.
-          
-
 
     /team_batting:
       get:
@@ -169,7 +149,7 @@ paths:
             operationId: getTeamBattingCombined
             summary: >
               Retrieves the combined batting statistics for all teams across the MLB from Fangraphs for the specified season.
-              It can also be used with the 'team_abbreviation' parameter to only get the combined batting statistics for a specific team.
+              The 'team_abbreviation' parameter should also be passed to only get the combined batting statistics for a specific team.
               This function should be used whenever a prompt is asking for combined statistics. 
             parameters:
               - in: query
@@ -180,7 +160,7 @@ paths:
                 description: The year from which the batting statistics should be retrieved from
               - in: query
                 name: team_abbreviation
-                required: false
+                required: true
                 schema:
                   type: string
                 description: >
@@ -197,29 +177,6 @@ paths:
                 description: >
                   Can be used to filter based on a certain batting statistic. 
                   Calling the function without this parameter can be used to get an overall view of stats returned from the function. 
-            
-
-
-
-    /team_fielding:
-      get: 
-          operationId: getTeamFielding
-          summary: Retrieves the fielding statistics from Baseball Reference for each player on the team for the provided season
-          parameters:
-            - in: query
-              name: team_abbreviation
-              required: true
-              schema:
-                type: string
-              description: The 3 letter abbreviated name of the baseball team.
-              example: NYY
-            - in: query
-              name: year
-              required: true
-              schema: 
-                type: integer
-              description: Used to select which season the team fielding statistics will be retrieved from. 
-          
 
     /team_pitching:
       get: 
@@ -246,7 +203,7 @@ paths:
             operationId: getTeamPitchingCombined
             summary: >
               Retrieves the combined pitching statistics for all teams across the MLB from Fangraphs for the specified season.
-              It can also be used with the 'team_abbreviation' parameter to only get the combined pitching statistics for a specific team.
+              The 'team_abbreviation' parameter should also be passed to only get the combined batting statistics for a specific team.
               This function should be used whenever a prompt is asking for combined pitching statistics for a team. 
             parameters:
               - in: query
@@ -257,7 +214,7 @@ paths:
                 description: The year from which the pitching statistics should be retrieved from
               - in: query
                 name: team_abbreviation
-                required: false
+                required: true
                 schema:
                   type: string
                 description: >
@@ -290,112 +247,7 @@ paths:
                   This ID will not be useful for a user. The model should use this for querying individual player statistics.
               "500":
                 description: Error. Multiple players and their IDs are returned. Display the results in a markdown table. 
-
-    /statcast_batter:
-        get:
-            operationId: getStatcastBatter
-            summary: Retrieves pitch-level statistics for a batter for a given date. 
-            parameters:
-              - in: query
-                name: date
-                required: true
-                description: The date that data should be retrieved from. 
-                schema:
-                  type: string
-                  format: date
-                  description: The date in the format of 'YYYY-MM-DD'.
-              - in: query
-                name: key_mlbam
-                required: true
-                description: >
-                  The MLBAM player ID of the player you want to retrieve data for. This value can be retrieved by invoking 
-                  the operation with operationId 'getPlayerIdLookup'.
-                schema: 
-                  type: integer
-          
-    
-    /statcast_fielding:
-        get: 
-          operationId: getStatcastFielding
-          summary: Retrieves fielding statstics of a position over a season time frame.
-          parameters:
-            - in: query
-              name: position_abbreviation
-              required: true
-              description: The two letter position abbreviation
-              schema:
-                type: string
-                enum: ['1B', '2B', 'SS', '3B', 'LF', 'CF', 'RF']
-              example: SS
-            - in: query
-              name: year
-              required: true
-              description: The year that fielding statistics should be retrieved from.
-              schema: 
-                type: integer
-           
-
-    /statcast_pitcher:
-        get: 
-          operationId: getStatcastPitcher
-          summary: Retrieves pitch-level statistics from Statcast for a pitcher for a specified date.
-          parameters:
-              - in: query
-                name: date
-                required: true
-                description: >
-                    The date from which data will be retrieved. This must be a date when the pitcher last pitched. 
-                    To retrieve when the pitcher last pitched, use the operation with operationID 'getPlayerGameLogs' to get the dates of player's previous pitching performances.
-                schema:
-                  type: string
-                  format: date
-                  description: The date in the format of 'YYYY-MM-DD'.  
-              - in: query
-                name: key_mlbam
-                required: true
-                description: >
-                  The MLBAM player ID of the player you want to retrieve data for. This value can be retrieved by invoking 
-                  the operation with operationId 'getPlayerIdLookup'.
-                schema: 
-                  type: integer
-            
-    
-    /statcast_sprint_speed:
-        get:
-          operationId: getStatcastSprintSpeed
-          summary: Retrieves the sprint speed of the top 250 players across the MLB. 
-          parameters:
-            - in: query
-              name: year
-              required: true
-              description: The season from which data will be retrieved from
-              schema: 
-                type: integer
-          
-
-    /statcast_pitch_arsenal:
-        get:
-          operationId: getStatcastPitchArsenal
-          summary: Retrieves a pitcher's pitch distribution percentages out of 100
-          parameters:
-            - in: query
-              name: year
-              required: true 
-              description: The season from which data will be retrieved from 
-              schema: 
-                type: integer
-            - in: query
-              name: key_mlbam
-              required: true
-              description: >
-                The MLBAM player ID of the player you want to retrieve data for. This value can be retrieved by invoking 
-                the operation with operationId 'getPlayerIdLookup'.
-              schema: 
-                type: integer
-          
-
-
-
+              
     /top_prospects:
         get:
           operationId: getTopProspects
@@ -453,8 +305,6 @@ paths:
                       'STL','SEA','TEX','HOU','LAA','OAK','LAD','ARI','SFG','SDP','COL']
               description: The 3 letter abbreviated name of the baseball team.
           
-
-
     /team_game_logs:
         get:
           operationId: getTeamGameLogs
@@ -491,7 +341,6 @@ paths:
                 enum: ['batting', 'pitching']
               description: Used to retrieve either 'batting' or 'pitching' statistics for the player. 
           
-    
     /player_game_logs:
         get:
           operationId: getPlayerGameLogs
