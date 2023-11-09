@@ -25,29 +25,6 @@ paths:
                       application/json:
                         schema: 
                             type: array
-
-    /news:
-        get:
-            operationId: getNews
-            summary: Retrieves up to date news articles for teams from mlb.com
-            parameters:
-              - in: query
-                name: team_name
-                required: true
-                schema:
-                  type: string
-                  enum: ['whitesox', 'guardians', 'tigers', 'royals', 'twins' , 'cubs' , 'reds' , 'brewers' , 'pirates', 
-                        'cardinals', 'orioles', 'redsox', 'yankees', 'rays', 'bluejays', 'braves', 'marlins', 'mets', 
-                        'phillies', 'nationals', 'astros', 'angels', 'athletics', 'mariners', 'rangers', 'diamondbacks', 
-                        'rockies', 'dodgers', 'padres', 'giants']
-                description: Used to filter out relevant news articles for the team being specified.
-            responses:
-              "200":
-                description: OK
-                content:
-                  application/json:
-                    schemas:
-                      type: array
     
     /batting_stats_individual:
       get:
