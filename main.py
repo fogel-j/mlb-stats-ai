@@ -454,8 +454,17 @@ async def get_player_split_stats():
 
     return quart.Response(json.dumps(split_data), content_type='application/json')
 
+# PRIVACY POLICY
+@app.get("/privacy")
+async def privacy():
+    return await quart.render_template('PRIVACY_POLICY.html')
 
+# LICENSE AND COPYRIGHT
+@app.get("/license")
+async def license():
+    return await quart.render_template("LICENSE.html")
 
+# LOGO
 @app.get("/logo.png")
 async def plugin_logo():
     filename = 'logo.png'
@@ -481,6 +490,7 @@ async def openapi_spec():
         text = text.replace("PLUGIN_HOSTNAME", f"https://{host}")
         return quart.Response(text, mimetype="text/yaml")
 
+# HEALTH CHECK
 @app.get("/api/health")
 async def healthcheck():
     return quart.Response("ALIVE", status=200)
