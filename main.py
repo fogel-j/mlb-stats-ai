@@ -42,30 +42,6 @@ async def get_standings():
 
     return quart.Response(json.dumps(overall_standings), status=200, content_type='application/json')
 
-@app.get("/news")
-async def get_news():
-    # Return relevant news articles for the team being asked about
-    team_name = request.args.get("team_name")
-
-    if not team_name.isalnum():
-        return quart.abort(400, "Invalid team_name parameter. It must be a string consisting only of alphanumeric characters.")
-
-    directory_path = os.getcwd() + '/mlb_crawler/scraped_data/' 
-    all_files = os.listdir(directory_path)
-    news_files = [f for f in all_files if f.startswith('mlb_news')]
-
-    articles = []
-    for filename in news_files:
-        with open(os.path.join(directory_path, filename)) as file:
-            data = json.load(file)
-            # Filter articles for the requested team
-            team_name = team_name.lower()
-            # Due to the current token prompt capacity, we must limit the number of articles collected
-            team_articles = list(itertools.islice((article for article in data if article['team'] == team_name), 7))
-            articles.extend(team_articles)
-
-    
-    return quart.Response(json.dumps(articles, ensure_ascii=False), content_type='application/json', status=200)
 
 @app.get("/batting_stats_individual")
 async def get_batting_stats_individual():
@@ -199,7 +175,7 @@ async def get_team_fielding():
     team_abr = request.args.get('team_abbreviation')
     year = int(request.args.get("year"))
     team_fielding_stats = team_fielding_bref(team_abr,year)
-    team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='table'))
+    team_fielding_stats = json.loads(team_fielding_stats.to_json(orient='records'))
     
 
     return quart.Response(json.dumps(team_fielding_stats), content_type='application/json')
