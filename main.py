@@ -60,8 +60,7 @@ async def get_batting_stats_individual():
 
 @app.get("/batting_stats")
 async def get_batting_stats():
-    # Return a specific batting statistic at a season level for all players from Fangraphs
-    # To see what data is being collected refer to 
+    # Return a specific batting statistic at a season level for all players from Fangraphs 
 
     year = int(request.args.get("year"))
     bat_stat = request.args.get("batting_stat")
@@ -429,6 +428,27 @@ async def get_player_split_stats():
     split_data = json.loads(split_data.to_json(orient='records'))
 
     return quart.Response(json.dumps(split_data), content_type='application/json')
+
+
+@app.get("/minor_league_stats")
+async def get_minor_league_stats():
+    # Retrieves batting or pitching statistics for all players across the MiLB; both affiliated and non-affiliated leagues 
+    year= int(request.args.get('year'))
+    stat_category=str(request.args.get('stat_category'))
+
+    if stat_category == 'batting':
+        minor_stats = batting_stats(year, minor_league=True)
+
+    elif stat_category == 'pitching':
+        minor_stats = starting_pitching_stats(year, minor_league=True)
+
+    else:
+        quart.Response("'stat_category' not recognized. Please use either 'batting' or 'pitching'")
+
+    minor_stats = json.loads(minor_stats.to_json(orient='records'))
+
+    return quart.Response(json.dumps(minor_stats), content_type='application/json')
+
 
 # PRIVACY POLICY
 @app.get("/privacy")

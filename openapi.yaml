@@ -697,6 +697,33 @@ paths:
                   schema: 
                     type: array
 
+    /minor_league_stats:
+        get:
+          operationId: getMinorLeagueStats
+          summary: Retrieves either batting or pitching minor league statistics
+          parameters:
+            - in: query
+              name: year
+              required: true
+              schema:
+                type: integer
+              description: Used to select which season the results will be retrieved from
+            - in: query
+              name: stat_category
+              required: true
+              schema:
+                type: string
+                enum: ['batting', 'pitching']
+              description: The stat category for which minor league statistics will be retrieved from
+          responses:
+            "200":
+              description: >
+                An array of minor league players and their batting or pitching statistics (depending on what's selected). 
+              content:
+                application/json:
+                  schema: 
+                    type: array
+
                 
 components:
   schemas:
