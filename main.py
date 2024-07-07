@@ -445,6 +445,10 @@ async def get_minor_league_stats():
     else:
         quart.Response("'stat_category' not recognized. Please use either 'batting' or 'pitching'")
 
+
+    ## Added because of OpenAI token limiting; previous queries were ~730,000 tokens
+    minor_stats = minor_stats.head(150)
+
     minor_stats = json.loads(minor_stats.to_json(orient='records'))
 
     return quart.Response(json.dumps(minor_stats), content_type='application/json')
