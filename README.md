@@ -14,8 +14,11 @@ Comprehensive APIs for OpenAI's LLM to access real-time information.
 
 ## Usage
 
-Just ask ChatGPT and explore the possibilities. I've made a lot of API operations for exploring all types of statistics. 
+Just ask ChatGPT and explore the possibilities. I've made a lot of API operations for exploring all types of statistics.
 
+## Known Issues
+
+OpenAI has nerfed GPTs so it's likely to give errors that I can't fix. You might get errors that the "ChatGPT can't connect to the API". My API is available 100% and is recognized in builder mode. 
 
 ## More Info
 
@@ -23,7 +26,6 @@ Check out my blog posts - [https://medium.com/@fogel123](https://medium.com/@fog
 
 
 ## Getting inaccurate results or errors?
-
 
 Submit your query and the response as an [issue](https://github.com/fogel-j/baseball-stats-ai/issues). 
 
